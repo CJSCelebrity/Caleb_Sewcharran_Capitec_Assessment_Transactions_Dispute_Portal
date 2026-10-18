@@ -1,0 +1,7 @@
+﻿services:
+  capitec_transactions_disputes_backend:
+    image: capitec_transactions_disputes_backend
+    build:
+      context: .
+      dockerfile: Capitec_Transactions_Disputes_Backend/Dockerfile
+
