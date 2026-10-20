@@ -1,0 +1,6 @@
+@CapitecDisputes.Api_HostAddress = http://localhost:5089
+
+GET {{CapitecDisputes.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
