@@ -2,10 +2,59 @@
   "version": 3,
   "targets": {
     "net10.0": {
+      "Castle.Core/5.2.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/Castle.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Castle.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "coverlet.collector/6.0.4": {
         "type": "package",
         "build": {
           "build/netstandard2.0/coverlet.collector.targets": {}
+        }
+      },
+      "DiffEngine/11.3.0": {
+        "type": "package",
+        "dependencies": {
+          "EmptyFiles": "4.4.0",
+          "System.Management": "6.0.1"
+        },
+        "compile": {
+          "lib/net7.0/DiffEngine.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/DiffEngine.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "EmptyFiles/4.4.0": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/EmptyFiles.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/EmptyFiles.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/EmptyFiles.targets": {}
         }
       },
       "Microsoft.CodeCoverage/17.14.1": {
@@ -285,6 +334,18 @@
           "build/net8.0/Microsoft.TestPlatform.TestHost.targets": {}
         }
       },
+      "Moq/4.21.0": {
+        "type": "package",
+        "dependencies": {
+          "Castle.Core": "5.2.1"
+        },
+        "compile": {
+          "lib/net6.0/Moq.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/Moq.dll": {}
+        }
+      },
       "Newtonsoft.Json/13.0.3": {
         "type": "package",
         "compile": {
@@ -295,6 +356,93 @@
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
             "related": ".xml"
+          }
+        }
+      },
+      "Shouldly/4.3.0": {
+        "type": "package",
+        "dependencies": {
+          "DiffEngine": "11.3.0",
+          "EmptyFiles": "4.4.0"
+        },
+        "compile": {
+          "lib/net9.0/Shouldly.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Shouldly.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/Shouldly.targets": {}
+        }
+      },
+      "System.CodeDom/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/System.CodeDom.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.CodeDom.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        }
+      },
+      "System.Diagnostics.EventLog/6.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/System.Diagnostics.EventLog.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Diagnostics.EventLog.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Diagnostics.EventLog.Messages.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          },
+          "runtimes/win/lib/net6.0/System.Diagnostics.EventLog.dll": {
+            "assetType": "runtime",
+            "rid": "win"
+          }
+        }
+      },
+      "System.Management/6.0.1": {
+        "type": "package",
+        "dependencies": {
+          "System.CodeDom": "6.0.0"
+        },
+        "compile": {
+          "lib/net6.0/System.Management.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/System.Management.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/netcoreapp3.1/_._": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win/lib/net6.0/System.Management.dll": {
+            "assetType": "runtime",
+            "rid": "win"
           }
         }
       },
@@ -397,6 +545,30 @@
     }
   },
   "libraries": {
+    "Castle.Core/5.2.1": {
+      "sha512": "wHARzQA695jwwKreOzNsq54KiGqKP38tv8hi8e2FXDEC/sA6BtrX90tVPDkOfVu13PbEzr00TCV8coikl+D1Iw==",
+      "type": "package",
+      "path": "castle.core/5.2.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "ASL - Apache Software Foundation License.txt",
+        "CHANGELOG.md",
+        "LICENSE",
+        "castle-logo.png",
+        "castle.core.5.2.1.nupkg.sha512",
+        "castle.core.nuspec",
+        "lib/net462/Castle.Core.dll",
+        "lib/net462/Castle.Core.xml",
+        "lib/net6.0/Castle.Core.dll",
+        "lib/net6.0/Castle.Core.xml",
+        "lib/netstandard2.0/Castle.Core.dll",
+        "lib/netstandard2.0/Castle.Core.xml",
+        "lib/netstandard2.1/Castle.Core.dll",
+        "lib/netstandard2.1/Castle.Core.xml",
+        "readme.txt"
+      ]
+    },
     "coverlet.collector/6.0.4": {
       "sha512": "lkhqpF8Pu2Y7IiN7OntbsTtdbpR1syMsm2F3IgX6ootA4ffRqWL5jF7XipHuZQTdVuWG/gVAAcf8mjk8Tz0xPg==",
       "type": "package",
@@ -465,6 +637,108 @@
         "coverlet-icon.png",
         "coverlet.collector.6.0.4.nupkg.sha512",
         "coverlet.collector.nuspec"
+      ]
+    },
+    "DiffEngine/11.3.0": {
+      "sha512": "k0ZgZqd09jLZQjR8FyQbSQE86Q7QZnjEzq1LPHtj1R2AoWO8sjV5x+jlSisL7NZAbUOI4y+7Bog8gkr9WIRBGw==",
+      "type": "package",
+      "path": "diffengine/11.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "diffengine.11.3.0.nupkg.sha512",
+        "diffengine.nuspec",
+        "icon.png",
+        "lib/net461/DiffEngine.dll",
+        "lib/net461/DiffEngine.xml",
+        "lib/net48/DiffEngine.dll",
+        "lib/net48/DiffEngine.xml",
+        "lib/net5.0/DiffEngine.dll",
+        "lib/net5.0/DiffEngine.xml",
+        "lib/net6.0/DiffEngine.dll",
+        "lib/net6.0/DiffEngine.xml",
+        "lib/net7.0/DiffEngine.dll",
+        "lib/net7.0/DiffEngine.xml",
+        "lib/netcoreapp2.0/DiffEngine.dll",
+        "lib/netcoreapp2.0/DiffEngine.xml",
+        "lib/netcoreapp2.1/DiffEngine.dll",
+        "lib/netcoreapp2.1/DiffEngine.xml",
+        "lib/netcoreapp3.0/DiffEngine.dll",
+        "lib/netcoreapp3.0/DiffEngine.xml",
+        "lib/netcoreapp3.1/DiffEngine.dll",
+        "lib/netcoreapp3.1/DiffEngine.xml",
+        "lib/netstandard2.0/DiffEngine.dll",
+        "lib/netstandard2.0/DiffEngine.xml",
+        "lib/netstandard2.1/DiffEngine.dll",
+        "lib/netstandard2.1/DiffEngine.xml"
+      ]
+    },
+    "EmptyFiles/4.4.0": {
+      "sha512": "gwJEfIGS7FhykvtZoscwXj/XwW+mJY6UbAZk+qtLKFUGWC95kfKXnj8VkxsZQnWBxJemM/q664rGLN5nf+OHZw==",
+      "type": "package",
+      "path": "emptyfiles/4.4.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "EmptyFiles/archive/empty.7z",
+        "EmptyFiles/archive/empty.bz2",
+        "EmptyFiles/archive/empty.gz",
+        "EmptyFiles/archive/empty.tar",
+        "EmptyFiles/archive/empty.xz",
+        "EmptyFiles/archive/empty.zip",
+        "EmptyFiles/document/empty.docx",
+        "EmptyFiles/document/empty.odt",
+        "EmptyFiles/document/empty.pdf",
+        "EmptyFiles/document/empty.rtf",
+        "EmptyFiles/image/empty.avif",
+        "EmptyFiles/image/empty.bmp",
+        "EmptyFiles/image/empty.dds",
+        "EmptyFiles/image/empty.dib",
+        "EmptyFiles/image/empty.emf",
+        "EmptyFiles/image/empty.exif",
+        "EmptyFiles/image/empty.gif",
+        "EmptyFiles/image/empty.heic",
+        "EmptyFiles/image/empty.heif",
+        "EmptyFiles/image/empty.ico",
+        "EmptyFiles/image/empty.j2c",
+        "EmptyFiles/image/empty.jfif",
+        "EmptyFiles/image/empty.jp2",
+        "EmptyFiles/image/empty.jpc",
+        "EmptyFiles/image/empty.jpe",
+        "EmptyFiles/image/empty.jpg",
+        "EmptyFiles/image/empty.jxr",
+        "EmptyFiles/image/empty.pbm",
+        "EmptyFiles/image/empty.pcx",
+        "EmptyFiles/image/empty.pgm",
+        "EmptyFiles/image/empty.png",
+        "EmptyFiles/image/empty.ppm",
+        "EmptyFiles/image/empty.rle",
+        "EmptyFiles/image/empty.tga",
+        "EmptyFiles/image/empty.tif",
+        "EmptyFiles/image/empty.wdp",
+        "EmptyFiles/image/empty.webp",
+        "EmptyFiles/image/empty.wmp",
+        "EmptyFiles/sheet/empty.ods",
+        "EmptyFiles/sheet/empty.xlsx",
+        "EmptyFiles/slide/empty.odp",
+        "EmptyFiles/slide/empty.pptx",
+        "build/EmptyFiles.targets",
+        "buildTransitive/EmptyFiles.targets",
+        "emptyfiles.4.4.0.nupkg.sha512",
+        "emptyfiles.nuspec",
+        "icon.png",
+        "lib/net461/EmptyFiles.dll",
+        "lib/net461/EmptyFiles.xml",
+        "lib/net5.0/EmptyFiles.dll",
+        "lib/net5.0/EmptyFiles.xml",
+        "lib/net6.0/EmptyFiles.dll",
+        "lib/net6.0/EmptyFiles.xml",
+        "lib/net7.0/EmptyFiles.dll",
+        "lib/net7.0/EmptyFiles.xml",
+        "lib/netstandard2.0/EmptyFiles.dll",
+        "lib/netstandard2.0/EmptyFiles.xml",
+        "lib/netstandard2.1/EmptyFiles.dll",
+        "lib/netstandard2.1/EmptyFiles.xml"
       ]
     },
     "Microsoft.CodeCoverage/17.14.1": {
@@ -734,6 +1008,23 @@
         "microsoft.testplatform.testhost.nuspec"
       ]
     },
+    "Moq/4.21.0": {
+      "sha512": "HUjrhhzEJ/AfbSBCnR8lPkpveVGpV/dNuOlnpfqBNTME93izly1CRV4N5zBySqz4m2yCRlHLPy/PnPzYokbwIg==",
+      "type": "package",
+      "path": "moq/4.21.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "icon.png",
+        "lib/net462/Moq.dll",
+        "lib/net6.0/Moq.dll",
+        "lib/netstandard2.0/Moq.dll",
+        "lib/netstandard2.1/Moq.dll",
+        "moq.4.21.0.nupkg.sha512",
+        "moq.nuspec",
+        "readme.md"
+      ]
+    },
     "Newtonsoft.Json/13.0.3": {
       "sha512": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
       "type": "package",
@@ -762,6 +1053,107 @@
         "newtonsoft.json.13.0.3.nupkg.sha512",
         "newtonsoft.json.nuspec",
         "packageIcon.png"
+      ]
+    },
+    "Shouldly/4.3.0": {
+      "sha512": "sDetrWXrl6YXZ4HeLsdBoNk3uIa7K+V4uvIJ+cqdRa5DrFxeTED7VkjoxCuU1kJWpUuBDZz2QXFzSxBtVXLwRQ==",
+      "type": "package",
+      "path": "shouldly/4.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "assets/logo_128x128.png",
+        "buildTransitive/Shouldly.targets",
+        "lib/net8.0/Shouldly.dll",
+        "lib/net8.0/Shouldly.xml",
+        "lib/net9.0/Shouldly.dll",
+        "lib/net9.0/Shouldly.xml",
+        "lib/netstandard2.0/Shouldly.dll",
+        "lib/netstandard2.0/Shouldly.xml",
+        "shouldly.4.3.0.nupkg.sha512",
+        "shouldly.nuspec"
+      ]
+    },
+    "System.CodeDom/6.0.0": {
+      "sha512": "CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA==",
+      "type": "package",
+      "path": "system.codedom/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/netcoreapp2.0/System.CodeDom.targets",
+        "buildTransitive/netcoreapp3.1/_._",
+        "lib/net461/System.CodeDom.dll",
+        "lib/net461/System.CodeDom.xml",
+        "lib/net6.0/System.CodeDom.dll",
+        "lib/net6.0/System.CodeDom.xml",
+        "lib/netstandard2.0/System.CodeDom.dll",
+        "lib/netstandard2.0/System.CodeDom.xml",
+        "system.codedom.6.0.0.nupkg.sha512",
+        "system.codedom.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.Diagnostics.EventLog/6.0.0": {
+      "sha512": "lcyUiXTsETK2ALsZrX+nWuHSIQeazhqPphLfaRxzdGaG93+0kELqpgEHtwWOlQe7+jSFnKwaCAgL4kjeZCQJnw==",
+      "type": "package",
+      "path": "system.diagnostics.eventlog/6.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/netcoreapp2.0/System.Diagnostics.EventLog.targets",
+        "buildTransitive/netcoreapp3.1/_._",
+        "lib/net461/System.Diagnostics.EventLog.dll",
+        "lib/net461/System.Diagnostics.EventLog.xml",
+        "lib/net6.0/System.Diagnostics.EventLog.dll",
+        "lib/net6.0/System.Diagnostics.EventLog.xml",
+        "lib/netcoreapp3.1/System.Diagnostics.EventLog.dll",
+        "lib/netcoreapp3.1/System.Diagnostics.EventLog.xml",
+        "lib/netstandard2.0/System.Diagnostics.EventLog.dll",
+        "lib/netstandard2.0/System.Diagnostics.EventLog.xml",
+        "runtimes/win/lib/net6.0/System.Diagnostics.EventLog.Messages.dll",
+        "runtimes/win/lib/net6.0/System.Diagnostics.EventLog.dll",
+        "runtimes/win/lib/net6.0/System.Diagnostics.EventLog.xml",
+        "runtimes/win/lib/netcoreapp3.1/System.Diagnostics.EventLog.Messages.dll",
+        "runtimes/win/lib/netcoreapp3.1/System.Diagnostics.EventLog.dll",
+        "runtimes/win/lib/netcoreapp3.1/System.Diagnostics.EventLog.xml",
+        "system.diagnostics.eventlog.6.0.0.nupkg.sha512",
+        "system.diagnostics.eventlog.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "System.Management/6.0.1": {
+      "sha512": "10J1D0h/lioojphfJ4Fuh5ZUThT/xOVHdV9roGBittKKNP2PMjrvibEdbVTGZcPra1399Ja3tqIJLyQrc5Wmhg==",
+      "type": "package",
+      "path": "system.management/6.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/netcoreapp2.0/System.Management.targets",
+        "buildTransitive/netcoreapp3.1/_._",
+        "lib/net461/_._",
+        "lib/net6.0/System.Management.dll",
+        "lib/net6.0/System.Management.xml",
+        "lib/netcoreapp3.1/System.Management.dll",
+        "lib/netcoreapp3.1/System.Management.xml",
+        "lib/netstandard2.0/System.Management.dll",
+        "lib/netstandard2.0/System.Management.xml",
+        "runtimes/win/lib/net6.0/System.Management.dll",
+        "runtimes/win/lib/net6.0/System.Management.xml",
+        "runtimes/win/lib/netcoreapp3.1/System.Management.dll",
+        "runtimes/win/lib/netcoreapp3.1/System.Management.xml",
+        "system.management.6.0.1.nupkg.sha512",
+        "system.management.nuspec",
+        "useSharedDesignerContext.txt"
       ]
     },
     "xunit/2.9.3": {
@@ -908,6 +1300,8 @@
   "projectFileDependencyGroups": {
     "net10.0": [
       "Microsoft.NET.Test.Sdk >= 17.14.1",
+      "Moq >= 4.21.0",
+      "Shouldly >= 4.3.0",
       "coverlet.collector >= 6.0.4",
       "xunit >= 2.9.3",
       "xunit.runner.visualstudio >= 3.1.4"
@@ -959,6 +1353,14 @@
           "Microsoft.NET.Test.Sdk": {
             "target": "Package",
             "version": "[17.14.1, )"
+          },
+          "Moq": {
+            "target": "Package",
+            "version": "[4.21.0, )"
+          },
+          "Shouldly": {
+            "target": "Package",
+            "version": "[4.3.0, )"
           },
           "coverlet.collector": {
             "target": "Package",
