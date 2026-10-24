@@ -8,6 +8,9 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["CapitecDisputes.Api/CapitecDisputes.Api.csproj", "CapitecDisputes.Api/"]
+COPY ["CapitecDisputes.Application/CapitecDisputes.Application.csproj", "CapitecDisputes.Application/"]
+COPY ["CapitecDisputes.Domain/CapitecDisputes.Domain.csproj", "CapitecDisputes.Domain/"]
+COPY ["CapitecDisputes.Infrastructure/CapitecDisputes.Infrastructure.csproj", "CapitecDisputes.Infrastructure/"]
 RUN dotnet restore "CapitecDisputes.Api/CapitecDisputes.Api.csproj"
 COPY . .
 WORKDIR "/src/CapitecDisputes.Api"

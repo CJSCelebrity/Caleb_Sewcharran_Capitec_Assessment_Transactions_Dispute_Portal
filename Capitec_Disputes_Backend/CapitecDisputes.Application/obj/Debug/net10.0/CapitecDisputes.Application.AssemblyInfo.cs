@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CapitecDisputes.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7be8cb06dc38f5e59c308d801eddbc0a8f982f55")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cd12b4285d0b12efa7d1745b67a0c43760230550")]
 [assembly: System.Reflection.AssemblyProductAttribute("CapitecDisputes.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CapitecDisputes.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

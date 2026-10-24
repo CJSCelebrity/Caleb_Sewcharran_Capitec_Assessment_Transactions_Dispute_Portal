@@ -1,7 +1,35 @@
-﻿services:
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: capitec_disputes
+      POSTGRES_USER: capitec
+      POSTGRES_PASSWORD: capitec
+    ports:
+      - "5432:5432"
+    volumes:
+      - disputes_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U capitec -d capitec_disputes"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   capitec_transactions_disputes_backend:
     image: capitec_transactions_disputes_backend
     build:
       context: .
-      dockerfile: Capitec_Transactions_Disputes_Backend/Dockerfile
+      dockerfile: CapitecDisputes.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: "8080"
+      ConnectionStrings__DisputesDb: "Host=postgres;Port=5432;Database=capitec_disputes;Username=capitec;Password=capitec"
+      Jwt__SigningKey: "dev-only-signing-key-change-me-0123456789abcdef"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
+volumes:
+  disputes_data:

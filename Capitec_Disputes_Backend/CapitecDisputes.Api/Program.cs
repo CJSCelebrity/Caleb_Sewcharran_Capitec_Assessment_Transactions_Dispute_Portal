@@ -1,23 +1,91 @@
+using System.Text;
+using System.Text.Json.Serialization;
+using CapitecDisputes.Application.Services;
+using CapitecDisputes.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DisputesDb")
+                       ?? throw new InvalidOperationException("ConnectionStrings:DisputesDb is not configured.");
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+var jwt = builder.Configuration.GetSection("Jwt");
+var issuer = jwt["Issuer"];
+var audience = jwt["Audience"];
+var signingKey = jwt["SigningKey"];
+
+if (string.IsNullOrWhiteSpace(issuer))
+{
+    throw new InvalidOperationException("Jwt:Issuer is not configured.");
+}
+
+if (string.IsNullOrWhiteSpace(audience))
+{
+    throw new InvalidOperationException("Jwt:Audience is not configured.");
+}
+
+if (string.IsNullOrWhiteSpace(signingKey))
+{
+    throw new InvalidOperationException("Jwt:SigningKey is not configured.");
+}
+
+if (Encoding.UTF8.GetByteCount(signingKey) < 32)
+{
+    throw new InvalidOperationException("Jwt:SigningKey must be at least 32 bytes.");
+}
+
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
 builder.Services.AddOpenApi();
+
+builder.Services.AddProblemDetails();
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
+            NameClaimType = "sub",
+            RoleClaimType = "role"
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddScoped<IDisputeService, DisputeService>();
+builder.Services.AddDisputesPersistence(connectionString);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
+app.UseExceptionHandler();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+await app.Services.ApplyDisputesMigrationsAsync();
+
+await app.RunAsync();

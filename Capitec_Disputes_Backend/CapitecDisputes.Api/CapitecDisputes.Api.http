@@ -1,3 +1,37 @@
-@CapitecDisputes.Api_HostAddress = http://localhost:5089
+@CapitecDisputes.Api_HostAddress = http://localhost:8080
+@token = paste-a-token-from-the-DevTokenGenerator-test
 
-###
+### List every dispute
+GET {{CapitecDisputes.Api_HostAddress}}/api/disputes
+Authorization: Bearer {{token}}
+
+### List only the disputes that are still initiated
+GET {{CapitecDisputes.Api_HostAddress}}/api/disputes?status=Initiated
+Authorization: Bearer {{token}}
+
+### Open the seeded initiated dispute
+GET {{CapitecDisputes.Api_HostAddress}}/api/disputes/0199c0de-0001-7000-8000-000000000001
+Authorization: Bearer {{token}}
+
+### Raise a dispute
+POST {{CapitecDisputes.Api_HostAddress}}/api/disputes
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "transactionId": "0199c0de-1001-7000-8000-000000000009",
+  "transactionAmount": 249.95,
+  "transactionCurrency": "ZAR",
+  "transactionDate": "2026-10-20T10:05:00+00:00",
+  "merchantName": "Checkers Sixty60",
+  "reason": "Delivered order was missing three items."
+}
+
+### Move the seeded initiated dispute to under investigation
+PATCH {{CapitecDisputes.Api_HostAddress}}/api/disputes/0199c0de-0001-7000-8000-000000000001/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "UnderInvestigation"
+}
