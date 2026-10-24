@@ -1,9 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using CapitecDisputes.Application.Authorization;
 using CapitecDisputes.Application.Contracts;
 using CapitecDisputes.Application.Services;
 using CapitecDisputes.Domain.Entities;
 using CapitecDisputes.Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CapitecDisputes.Api.Controllers;

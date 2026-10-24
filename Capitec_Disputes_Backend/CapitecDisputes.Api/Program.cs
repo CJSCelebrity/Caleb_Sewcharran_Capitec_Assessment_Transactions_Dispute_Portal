@@ -1,8 +1,13 @@
+using System;
 using System.Text;
 using System.Text.Json.Serialization;
 using CapitecDisputes.Application.Services;
 using CapitecDisputes.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);

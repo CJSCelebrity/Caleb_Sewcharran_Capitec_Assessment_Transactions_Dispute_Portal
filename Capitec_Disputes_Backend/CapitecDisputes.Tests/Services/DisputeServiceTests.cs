@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using CapitecDisputes.Application.Abstractions;
 using CapitecDisputes.Application.Contracts;
 using CapitecDisputes.Application.Services;
@@ -6,6 +9,7 @@ using CapitecDisputes.Domain.Exceptions;
 using CapitecDisputes.Tests.TestSupport;
 using Moq;
 using Shouldly;
+using Xunit;
 
 namespace CapitecDisputes.Tests.Services;
 

@@ -1,6 +1,8 @@
+using System;
 using CapitecDisputes.Domain.Entities;
 using CapitecDisputes.Domain.Exceptions;
 using Shouldly;
+using Xunit;
 
 namespace CapitecDisputes.Tests.Entities;
 

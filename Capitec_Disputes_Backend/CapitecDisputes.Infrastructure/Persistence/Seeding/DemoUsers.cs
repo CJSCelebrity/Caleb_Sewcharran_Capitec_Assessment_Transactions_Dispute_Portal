@@ -1,4 +1,7 @@
-﻿namespace CapitecDisputes.Infrastructure.Persistence.Seeding;
+﻿using System;
+using System.Collections.Generic;
+
+namespace CapitecDisputes.Infrastructure.Persistence.Seeding;
 
 internal sealed record DemoUser(Guid Id, string Email, string Password, string Role);
 

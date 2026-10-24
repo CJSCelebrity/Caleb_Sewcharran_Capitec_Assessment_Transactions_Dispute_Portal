@@ -1,3 +1,4 @@
+using System;
 using CapitecDisputes.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

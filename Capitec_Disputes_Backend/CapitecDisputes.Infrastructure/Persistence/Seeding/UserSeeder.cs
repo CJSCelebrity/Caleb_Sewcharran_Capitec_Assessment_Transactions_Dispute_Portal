@@ -1,4 +1,7 @@
-﻿namespace CapitecDisputes.Infrastructure.Persistence.Seeding;
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace CapitecDisputes.Infrastructure.Persistence.Seeding;
 
 internal sealed class UserSeeder
 {

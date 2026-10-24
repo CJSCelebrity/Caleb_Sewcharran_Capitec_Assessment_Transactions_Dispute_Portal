@@ -1,9 +1,11 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using CapitecDisputes.Application.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Shouldly;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace CapitecDisputes.Tests.TestSupport;
