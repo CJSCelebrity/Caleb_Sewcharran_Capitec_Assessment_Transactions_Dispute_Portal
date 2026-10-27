@@ -8,3 +8,4 @@ obj/
 .env.local
 *.local.json
 appsettings.*.local.json
+seed-users.csv

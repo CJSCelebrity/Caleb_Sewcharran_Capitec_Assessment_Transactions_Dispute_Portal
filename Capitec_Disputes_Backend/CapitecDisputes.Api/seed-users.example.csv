@@ -1,0 +1,3 @@
+email,password,role
+admin@capitec.test,,DisputeAdmin
+readonly@capitec.test,,ReadOnly

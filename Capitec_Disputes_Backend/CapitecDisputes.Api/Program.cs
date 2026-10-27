@@ -76,7 +76,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IDisputeService, DisputeService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddDisputesPersistence(connectionString);
-builder.Services.AddDisputesSecurity(builder.Configuration);
+builder.Services.AddDisputesSecurity(builder.Configuration, builder.Environment.ContentRootPath);
 
 var app = builder.Build();
 

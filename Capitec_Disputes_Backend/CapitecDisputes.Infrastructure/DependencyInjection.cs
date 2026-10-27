@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using CapitecDisputes.Application.Abstractions;
@@ -29,10 +31,21 @@ public static class DependencyInjection
 
     public static IServiceCollection AddDisputesSecurity(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        string contentRootPath)
     {
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
-        services.Configure<SeedUsersOptions>(configuration.GetSection("Seed"));
+
+        services.Configure<SeedOptions>(options =>
+        {
+            var configuredPath = configuration["Seed:UsersFilePath"];
+
+            options.UsersFilePath = Path.GetFullPath(
+                string.IsNullOrWhiteSpace(configuredPath)
+                    ? SeedOptions.DefaultUsersFileName
+                    : configuredPath,
+                contentRootPath);
+        });
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddSingleton<IPasswordHasher, Pbkdf2PasswordHasher>();
@@ -59,14 +72,34 @@ public static class DependencyInjection
     {
         await using var scope = services.CreateAsyncScope();
 
+        var path = scope.ServiceProvider.GetRequiredService<IOptions<SeedOptions>>().Value.UsersFilePath;
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<UserSeeder>>();
+
+        if (!File.Exists(path))
+        {
+            logger.LogWarning(
+                "No seed user file at {Path}, so no portal accounts were created. "
+                + "Copy seed-users.example.csv to that path to sign in.",
+                path);
+
+            return;
+        }
+
+        var source = Path.GetFileName(path);
+
+        List<SeedUser> seedUsers;
+
+        using (var reader = File.OpenText(path))
+        {
+            seedUsers = [.. SeedUserCsvReader.Read(reader, source)];
+        }
+
         var seeder = new UserSeeder(
             scope.ServiceProvider.GetRequiredService<DisputesDbContext>(),
             scope.ServiceProvider.GetRequiredService<IPasswordHasher>(),
             scope.ServiceProvider.GetRequiredService<TimeProvider>(),
-            scope.ServiceProvider.GetRequiredService<ILogger<UserSeeder>>());
+            logger);
 
-        var seedUsers = scope.ServiceProvider.GetRequiredService<IOptions<SeedUsersOptions>>().Value.Users;
-
-        await seeder.SeedAsync([.. seedUsers], cancellationToken);
+        await seeder.SeedAsync(seedUsers, source, cancellationToken);
     }
 }
