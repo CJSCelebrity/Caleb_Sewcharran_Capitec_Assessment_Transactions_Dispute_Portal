@@ -2,3 +2,9 @@
 bin/
 obj/
 *.pdb
+
+# Local secrets. Never commit real credentials.
+.env
+.env.local
+*.local.json
+appsettings.*.local.json

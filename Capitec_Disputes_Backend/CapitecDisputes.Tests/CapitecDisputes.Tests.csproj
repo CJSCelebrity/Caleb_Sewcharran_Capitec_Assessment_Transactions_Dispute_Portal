@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CapitecDisputes.Application\CapitecDisputes.Application.csproj" />
+      <ProjectReference Include="..\CapitecDisputes.Infrastructure\CapitecDisputes.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
