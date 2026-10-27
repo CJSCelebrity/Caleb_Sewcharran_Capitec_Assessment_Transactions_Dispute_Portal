@@ -24,7 +24,13 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: "8080"
       ConnectionStrings__DisputesDb: "Host=postgres;Port=5432;Database=capitec_disputes;Username=capitec;Password=capitec"
-      Jwt__SigningKey: "dev-only-signing-key-change-me-0123456789abcdef"
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in .env}
+      Seed__Users__0__Email: ${SEED_ADMIN_EMAIL:-admin@capitec.test}
+      Seed__Users__0__Password: ${SEED_ADMIN_PASSWORD:?set SEED_ADMIN_PASSWORD in .env}
+      Seed__Users__0__Role: DisputeAdmin
+      Seed__Users__1__Email: ${SEED_READONLY_EMAIL:-readonly@capitec.test}
+      Seed__Users__1__Password: ${SEED_READONLY_PASSWORD:?set SEED_READONLY_PASSWORD in .env}
+      Seed__Users__1__Role: ReadOnly
     ports:
       - "8080:8080"
     depends_on:

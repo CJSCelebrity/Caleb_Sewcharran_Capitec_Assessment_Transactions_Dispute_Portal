@@ -74,7 +74,9 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IDisputeService, DisputeService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddDisputesPersistence(connectionString);
+builder.Services.AddDisputesSecurity(builder.Configuration);
 
 var app = builder.Build();
 
@@ -96,5 +98,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.Services.ApplyDisputesMigrationsAsync();
+
+if (app.Environment.IsDevelopment())
+{
+    await app.Services.SeedConfiguredUsersAsync();
+}
 
 await app.RunAsync();

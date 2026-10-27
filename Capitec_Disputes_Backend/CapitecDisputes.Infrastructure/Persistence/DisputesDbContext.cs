@@ -7,6 +7,8 @@ public sealed class DisputesDbContext(DbContextOptions<DisputesDbContext> option
 {
     public DbSet<Dispute> Disputes => Set<Dispute>();
 
+    public DbSet<User> Users => Set<User>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DisputesDbContext).Assembly);
 }
