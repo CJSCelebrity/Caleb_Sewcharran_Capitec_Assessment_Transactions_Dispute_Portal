@@ -100,4 +100,27 @@ describe('DisputesListPage', () => {
 
     expect(await screen.findByRole('alert')).toBeInTheDocument()
   })
+
+  it('keeps the disputes list as a real table inside the scroll container', async () => {
+    server.use(http.get('*/api/disputes', () => HttpResponse.json([takealot])))
+
+    renderWithProviders(withRole('ReadOnly', <DisputesListPage />))
+
+    const table = await screen.findByRole('table')
+
+    expect(within(table).getAllByRole('row')).toHaveLength(2)
+    expect(within(table).getAllByRole('columnheader')).toHaveLength(6)
+  })
+
+  it('keeps the status badge text free of icon content', async () => {
+    server.use(http.get('*/api/disputes', () => HttpResponse.json([takealot])))
+
+    renderWithProviders(withRole('ReadOnly', <DisputesListPage />))
+
+    const row = await screen.findByRole('row', { name: /Takealot/ })
+    const badge = within(row).getByText('Initiated')
+
+    expect(badge).toHaveClass('badge', 'badge-initiated')
+    expect(badge.textContent).toBe('Initiated')
+  })
 })

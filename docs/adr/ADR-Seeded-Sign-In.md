@@ -21,3 +21,11 @@ I went with the approach of using the JWT signed tokens. This is due to the scal
 
 **Negative**
 - We lose the control of negating the token since it will be valid once the token has been issued, even if there is a compromised users account
+
+## Update - 2026-10-27: seed source moved to CSV
+
+The accounts provided to us are now listed in `CapitecDisputes.Api/seed-users.csv` with columns `email,password,role`, replacing the `Seed:Users` configuration section that was split across .NET user secrets and `.env`. The file is gitignored and `seed-users.example.csv` documents the shape. Compose bind-mounts the same file read-only at `/app/seed-users.csv`, so both run modes read one roster.
+
+Seeding stays Development-only and insert-only, so changing a password in the CSV takes effect only after the matching row is removed. A missing file logs a warning and startup continues; a malformed file still throws, with the offending line number in the message.
+
+Fields are split on the first and last comma, so a password may contain commas while an email or role may not. All three fields are trimmed, which prevents the stray whitespace that the previous configuration keys were vulnerable to.

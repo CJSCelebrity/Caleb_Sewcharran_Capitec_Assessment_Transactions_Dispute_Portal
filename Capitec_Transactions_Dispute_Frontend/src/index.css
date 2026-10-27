@@ -1,220 +1,868 @@
+/* ==========================================================================
+   Layer 1: primitives. Fixed hues, never themed.
+   ========================================================================== */
+
 :root {
-  --brand-900: #0a1f44;
-  --brand-700: #123a6b;
-  --brand-500: #1d6fd0;
+  --blue-950: #050f24;
+  --blue-900: #071a3c;
+  --blue-800: #0a2a5e;
+  --blue-700: #0e3d82;
+  --blue-600: #14509f;
+  --blue-500: #1b6ac4;
+  --blue-400: #4a90df;
+  --blue-300: #8bb8ec;
+  --blue-100: #e4edfa;
+  --blue-50: #f2f7fd;
 
-  --bg: #f4f6fa;
-  --surface: #ffffff;
-  --text: #1a2233;
-  --text-muted: #5a6478;
-  --border: #d8dee9;
+  --green-900: #0a3d25;
+  --green-800: #0c5132;
+  --green-700: #0f6b3f;
+  --green-500: #16a34a;
+  --green-400: #34c56a;
+  --green-300: #86e0a8;
+  --green-100: #dff3e6;
 
-  --status-initiated-bg: #e6eefc;
-  --status-initiated-fg: #123a6b;
-  --status-investigating-bg: #fdf1dc;
-  --status-investigating-fg: #7a4d05;
-  --status-resolved-bg: #e3f5ea;
-  --status-resolved-fg: #11603a;
+  --gold-900: #4a3208;
+  --gold-800: #6b4806;
+  --gold-700: #8a6008;
+  --gold-500: #c9930c;
+  --gold-400: #e0a826;
+  --gold-300: #f0c866;
+  --gold-100: #fbf0d7;
 
-  --danger-bg: #fdecec;
-  --danger-fg: #8c1c1c;
-  --danger-border: #f0b6b6;
+  --red-900: #5c1212;
+  --red-800: #7d1717;
+  --red-700: #9b1c1c;
+  --red-500: #d93838;
+  --red-300: #f4a8a8;
+  --red-100: #fdeaea;
 
-  --radius: 8px;
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 16px/1.5 var(--sans);
-  color: var(--text);
-  background: var(--bg);
+  --ink-950: #06080d;
+  --ink-900: #0b0f16;
+  --ink-800: #141a24;
+  --ink-700: #1d2430;
+  --ink-600: #2c3542;
+  --ink-500: #525c6b;
+  --ink-400: #76808f;
+  --ink-300: #a7b0bd;
+  --ink-200: #d7dde8;
+  --ink-100: #e9edf3;
+  --ink-50: #f5f7fa;
+  --white: #ffffff;
 }
 
-* {
+/* ==========================================================================
+   Scales
+   ========================================================================== */
+
+:root {
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  --page-max: 72rem;
+
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable Text', 'Segoe UI',
+    system-ui, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: 1.375rem;
+  --step-3: clamp(1.5rem, 1.2rem + 1.2vw, 1.875rem);
+
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --dur: 160ms;
+}
+
+/* ==========================================================================
+   Layer 2: semantics, light theme. Components reference only these.
+   ========================================================================== */
+
+:root {
+  --bg: var(--ink-50);
+  --surface: var(--white);
+  --surface-translucent: rgba(255, 255, 255, 0.82);
+  --surface-sunken: var(--ink-100);
+  --row-hover: var(--blue-50);
+  --border: var(--ink-200);
+  --border-strong: var(--ink-300);
+
+  --text: var(--ink-900);
+  --text-muted: var(--ink-500);
+  --heading: var(--blue-900);
+
+  --brand: var(--blue-700);
+  --brand-hover: var(--blue-800);
+  --brand-active: var(--blue-900);
+  --brand-contrast: var(--white);
+  --brand-soft: var(--blue-50);
+
+  --link: var(--blue-600);
+  --link-hover: var(--blue-800);
+
+  --accent-rule: var(--gold-500);
+  --focus-ring: var(--gold-700);
+  --focus-halo: rgba(224, 168, 38, 0.35);
+
+  --status-initiated-bg: var(--blue-100);
+  --status-initiated-fg: var(--blue-800);
+  --status-initiated-ring: rgba(10, 42, 94, 0.14);
+  --status-investigating-bg: var(--gold-100);
+  --status-investigating-fg: var(--gold-800);
+  --status-investigating-ring: rgba(107, 72, 6, 0.16);
+  --status-resolved-bg: var(--green-100);
+  --status-resolved-fg: var(--green-800);
+  --status-resolved-ring: rgba(12, 81, 50, 0.14);
+
+  --danger-bg: var(--red-100);
+  --danger-fg: var(--red-700);
+  --danger-border: rgba(155, 28, 28, 0.25);
+  --danger-rule: var(--red-500);
+
+  --shadow-sm: 0 1px 2px rgba(6, 8, 13, 0.06), 0 1px 1px rgba(6, 8, 13, 0.04);
+  --shadow-md: 0 2px 4px rgba(6, 8, 13, 0.05), 0 8px 20px -10px rgba(6, 8, 13, 0.18);
+  --shadow-header: 0 2px 0 0 var(--accent-rule), 0 12px 24px -20px rgba(6, 8, 13, 0.45);
+
+  --chevron: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23525c6b' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+
+/* ==========================================================================
+   Reset and base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 body {
   margin: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--sans);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 1.5rem 3rem;
-}
-
-a {
-  color: var(--brand-500);
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
 }
 
 h1,
-h2 {
-  color: var(--brand-900);
-  margin: 0 0 0.5rem;
+h2,
+h3 {
+  margin: 0 0 var(--space-2);
+  color: var(--heading);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
 }
 
+h1 {
+  font-size: var(--step-3);
+}
+
+h2 {
+  font-size: var(--step-2);
+}
+
+h3 {
+  font-size: var(--step-1);
+}
+
+p {
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition: color var(--dur) var(--ease);
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px var(--focus-halo);
+}
+
+/* ==========================================================================
+   App shell
+   ========================================================================== */
+
 .app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--surface-translucent);
+  backdrop-filter: saturate(150%) blur(10px);
+  -webkit-backdrop-filter: saturate(150%) blur(10px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-header);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .app-header {
+    background: var(--surface);
+  }
+}
+
+.app-header__inner {
   display: flex;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-5);
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1.5rem;
+  gap: var(--space-4);
 }
 
 .app-header nav {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-4);
 }
 
+.app-header .mono {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+
+.theme-toggle {
+  width: 2.75rem;
+  padding: 0;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--heading);
+  font-size: var(--step-1);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.brand:hover {
+  color: var(--link-hover);
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+}
+
+/* ==========================================================================
+   Surfaces
+   ========================================================================== */
+
 .card {
+  padding: var(--space-5);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
+
+.auth-card {
+  max-width: 26rem;
+  margin: var(--space-7) auto;
+}
+
+.page-form {
+  max-width: 40rem;
+}
+
+.note {
+  margin: var(--space-2) 0 var(--space-4);
+  max-width: 62ch;
+  color: var(--text-muted);
+  font-size: var(--step--1);
+}
+
+/* ==========================================================================
+   Buttons and button shaped links
+   ========================================================================== */
+
+button,
+.button-link,
+.button-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: 0.625rem 1.125rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--brand-contrast);
+  background: var(--brand);
+  border: 1px solid var(--brand);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease), transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+button:hover,
+.button-link:hover {
+  color: var(--brand-contrast);
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+  box-shadow: var(--shadow-md);
+}
+
+button:active,
+.button-link:active {
+  background: var(--brand-active);
+  border-color: var(--brand-active);
+  box-shadow: none;
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+button:disabled:hover {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+button.secondary {
+  color: var(--brand);
+  background: transparent;
+  border-color: var(--border-strong);
+  box-shadow: none;
+}
+
+button.secondary:hover {
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  box-shadow: none;
+}
+
+.button-ghost {
+  color: var(--text-muted);
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.button-ghost:hover {
+  color: var(--text);
+  background: var(--surface-sunken);
+  border-color: transparent;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Form fields
+   ========================================================================== */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.field > label {
+  color: var(--text);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.75rem;
+  font: inherit;
+  color: var(--text);
+  background-color: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.field textarea {
+  min-height: 6rem;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--ink-400);
+}
+
+.field input:hover,
+.field textarea:hover,
+.field select:hover {
+  border-color: var(--brand);
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--brand);
+}
+
+.field select {
+  appearance: none;
+  padding-right: 2.25rem;
+  background-image: var(--chevron);
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.75rem;
+}
+
+.field-error {
+  display: flex;
+  align-items: baseline;
+  color: var(--danger-fg);
+  font-size: var(--step--1);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Toolbar and page headings
+   ========================================================================== */
 
 .toolbar {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.toolbar .field {
+  min-width: 12rem;
+  margin-bottom: 0;
+}
+
+.page-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.page-heading h1 {
+  margin: 0;
+}
+
+.link-back {
+  color: var(--text-muted);
+  font-size: var(--step--1);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.link-back:hover {
+  color: var(--link-hover);
+}
+
+/* ==========================================================================
+   Data table. The wrapper owns the frame so the table keeps its semantics.
+   ========================================================================== */
+
+.table-scroll {
+  overflow-x: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 table {
   width: 100%;
+  min-width: 46rem;
   border-collapse: collapse;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
 }
 
 th,
 td {
+  padding: var(--space-3) var(--space-4);
   text-align: left;
-  padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--border);
 }
 
-th {
-  background: var(--bg);
+thead th {
   color: var(--text-muted);
-  font-size: 0.8rem;
+  background: var(--surface-sunken);
+  font-size: 0.6875rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+}
+
+tbody tr {
+  transition: background var(--dur) var(--ease);
+}
+
+tbody tr:hover {
+  background: var(--row-hover);
 }
 
 tbody tr:last-child td {
   border-bottom: none;
 }
 
+td {
+  vertical-align: middle;
+}
+
 .numeric {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
+.cell-action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.cell-action:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Status badges. The icon carries the status as shape, so colour is not the
+   only channel. Text content stays exactly the status label.
+   ========================================================================== */
+
 .badge {
-  display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--step--1);
   font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
 .badge-initiated {
-  background: var(--status-initiated-bg);
   color: var(--status-initiated-fg);
+  background: var(--status-initiated-bg);
+  box-shadow: inset 0 0 0 1px var(--status-initiated-ring);
 }
 
 .badge-under-investigation {
-  background: var(--status-investigating-bg);
   color: var(--status-investigating-fg);
+  background: var(--status-investigating-bg);
+  box-shadow: inset 0 0 0 1px var(--status-investigating-ring);
 }
 
 .badge-resolved {
-  background: var(--status-resolved-bg);
   color: var(--status-resolved-fg);
+  background: var(--status-resolved-bg);
+  box-shadow: inset 0 0 0 1px var(--status-resolved-ring);
 }
 
-button {
-  font: inherit;
-  padding: 0.55rem 1.1rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--brand-700);
-  background: var(--brand-700);
-  color: #fff;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-button.secondary {
-  background: transparent;
-  color: var(--brand-700);
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
-}
-
-.field label {
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.field input,
-.field textarea,
-.field select {
-  font: inherit;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--text);
-}
-
-.field-error {
-  color: var(--danger-fg);
-  font-size: 0.85rem;
-}
+/* ==========================================================================
+   Error banner
+   ========================================================================== */
 
 .error-banner {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+  color: var(--danger-fg);
   background: var(--danger-bg);
   border: 1px solid var(--danger-border);
-  color: var(--danger-fg);
+  border-left: 3px solid var(--danger-rule);
   border-radius: var(--radius);
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
 }
+
+.error-banner > .svg-inline--fa {
+  margin-top: 0.2em;
+}
+
+.error-banner__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.error-banner strong {
+  font-weight: 600;
+}
+
+.error-banner p {
+  margin: 0;
+  font-size: var(--step--1);
+}
+
+/* ==========================================================================
+   Detail definition list
+   ========================================================================== */
 
 .detail-grid {
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 0.75rem 1.5rem;
-  margin: 1.5rem 0;
+  grid-template-columns: minmax(9rem, 14rem) 1fr;
+  margin: var(--space-5) 0 var(--space-6);
+}
+
+.detail-grid dt,
+.detail-grid dd {
+  padding: var(--space-3) 0;
+  margin: 0;
+  border-top: 1px solid var(--border);
 }
 
 .detail-grid dt {
+  padding-right: var(--space-4);
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--step--1);
+  font-weight: 500;
 }
 
 .detail-grid dd {
-  margin: 0;
+  color: var(--text);
+}
+
+.detail-grid dt:nth-of-type(1),
+.detail-grid dd:nth-of-type(1) {
+  border-top: none;
 }
 
 .mono {
   font-family: var(--mono);
-  font-size: 0.9rem;
+  font-size: var(--step--1);
+}
+
+/* ==========================================================================
+   Icons. Sized from the type scale, never from the size prop.
+   ========================================================================== */
+
+.svg-inline--fa {
+  flex: none;
+  vertical-align: -0.125em;
+}
+
+button .svg-inline--fa,
+.button-link .svg-inline--fa,
+.button-ghost .svg-inline--fa {
+  font-size: 0.875em;
+}
+
+.badge .svg-inline--fa {
+  font-size: 0.875em;
+}
+
+.note .svg-inline--fa,
+.link-back .svg-inline--fa,
+.field-error .svg-inline--fa {
+  margin-right: var(--space-2);
+}
+
+.error-banner .svg-inline--fa {
+  font-size: 1.05em;
+}
+
+.brand .svg-inline--fa {
+  font-size: 1.15em;
+  color: var(--gold-500);
+}
+
+/* ==========================================================================
+   Layer 2: semantics, dark theme. Re-points meanings only, never hues.
+   Driven by data-theme on the root element, which ThemeProvider writes and
+   the inline script in index.html sets before first paint. The attribute
+   carries specificity, so these win over their light counterparts.
+   ========================================================================== */
+
+:root[data-theme='dark'] {
+  --bg: #080c14;
+  --surface: #111722;
+  --surface-translucent: rgba(17, 23, 34, 0.82);
+  --surface-sunken: #0c1220;
+  --row-hover: rgba(27, 106, 196, 0.1);
+  --border: #212b3b;
+  --border-strong: #324055;
+
+  --text: #e8edf5;
+  --text-muted: var(--ink-300);
+  --heading: #f2f6fc;
+
+  --brand: var(--blue-500);
+  --brand-hover: var(--blue-400);
+  --brand-active: var(--blue-300);
+  --brand-contrast: var(--white);
+  --brand-soft: rgba(27, 106, 196, 0.16);
+
+  --link: var(--blue-300);
+  --link-hover: #b8d4f4;
+
+  --accent-rule: var(--gold-500);
+  --focus-ring: var(--gold-400);
+  --focus-halo: rgba(224, 168, 38, 0.28);
+
+  --status-initiated-bg: rgba(27, 106, 196, 0.18);
+  --status-initiated-fg: var(--blue-300);
+  --status-initiated-ring: rgba(74, 144, 223, 0.42);
+  --status-investigating-bg: rgba(224, 168, 38, 0.16);
+  --status-investigating-fg: var(--gold-300);
+  --status-investigating-ring: rgba(224, 168, 38, 0.4);
+  --status-resolved-bg: rgba(22, 163, 74, 0.18);
+  --status-resolved-fg: var(--green-300);
+  --status-resolved-ring: rgba(52, 197, 106, 0.4);
+
+  --danger-bg: rgba(217, 56, 56, 0.15);
+  --danger-fg: var(--red-300);
+  --danger-border: rgba(217, 56, 56, 0.42);
+  --danger-rule: var(--red-500);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 10px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-header: 0 2px 0 0 var(--accent-rule), 0 14px 28px -22px rgba(0, 0, 0, 0.9);
+
+  --chevron: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23a7b0bd' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+
+:root[data-theme='dark'] .field input::placeholder,
+:root[data-theme='dark'] .field textarea::placeholder {
+  color: var(--ink-500);
+}
+
+:root[data-theme='dark'] .brand .svg-inline--fa {
+  color: var(--gold-400);
+}
+
+/* ==========================================================================
+   Narrow screens
+   ========================================================================== */
+
+@media (max-width: 48rem) {
+  .app-header__inner {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .app-header nav {
+    gap: var(--space-3);
+  }
+
+  main {
+    padding: var(--space-5) var(--space-4) var(--space-6);
+  }
+
+  .card {
+    padding: var(--space-4);
+  }
+
+  .auth-card {
+    margin: var(--space-5) auto;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar .field {
+    min-width: 0;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-grid dd {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .detail-grid dt {
+    padding-bottom: var(--space-1);
+  }
+}
+
+@media (max-width: 30rem) {
+  .app-header__inner {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+  }
+
+  .app-header .mono {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

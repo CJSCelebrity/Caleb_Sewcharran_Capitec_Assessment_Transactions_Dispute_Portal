@@ -1,4 +1,6 @@
 import { Link, useParams } from 'react-router'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft, faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { ApiError } from '../api/client'
 import { useAuth } from '../auth/useAuth'
 import { ErrorBanner } from '../components/ErrorBanner'
@@ -13,7 +15,12 @@ export function DisputeDetailPage() {
   const advance = useAdvanceStatusMutation(id)
 
   if (isPending) {
-    return <p>Loading dispute...</p>
+    return (
+      <p className="note">
+        <FontAwesomeIcon icon={faSpinner} spin />
+        Loading dispute...
+      </p>
+    )
   }
 
   if (isError) {
@@ -30,11 +37,14 @@ export function DisputeDetailPage() {
   return (
     <section className="card">
       <div className="toolbar">
-        <div>
+        <div className="page-heading">
           <h1>{dispute.merchantName}</h1>
           <StatusBadge status={dispute.status} />
         </div>
-        <Link to="/disputes">Back to disputes</Link>
+        <Link to="/disputes" className="link-back">
+          <FontAwesomeIcon icon={faArrowLeft} />
+          Back to disputes
+        </Link>
       </div>
 
       {advance.isError ? (
@@ -70,18 +80,20 @@ export function DisputeDetailPage() {
 
       {canAdvance && next ? (
         <button type="button" disabled={advance.isPending} onClick={() => advance.mutate(next)}>
+          <FontAwesomeIcon
+            icon={advance.isPending ? faSpinner : faArrowRight}
+            spin={advance.isPending}
+          />
           {advance.isPending ? 'Updating...' : `Advance to ${STATUS_LABELS[next]}`}
         </button>
       ) : null}
 
       {next === null ? (
-        <p style={{ color: 'var(--text-muted)' }}>
-          This dispute is resolved. No further status changes are possible.
-        </p>
+        <p className="note">This dispute is resolved. No further status changes are possible.</p>
       ) : null}
 
       {next !== null && session?.role !== 'DisputeAdmin' ? (
-        <p style={{ color: 'var(--text-muted)' }}>Only a DisputeAdmin can advance a dispute.</p>
+        <p className="note">Only a DisputeAdmin can advance a dispute.</p>
       ) : null}
     </section>
   )

@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faChevronRight, faInbox, faPlus, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '../auth/useAuth'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { StatusBadge } from '../components/StatusBadge'
@@ -14,8 +16,10 @@ export function DisputesListPage() {
 
   return (
     <section>
+      <h1>Disputes</h1>
+
       <div className="toolbar">
-        <div className="field" style={{ marginBottom: 0 }}>
+        <div className="field">
           <label htmlFor="status-filter">Status</label>
           <select
             id="status-filter"
@@ -31,48 +35,68 @@ export function DisputesListPage() {
           </select>
         </div>
 
-        {session?.role === 'DisputeAdmin' ? <Link to="/disputes/new">Raise a dispute</Link> : null}
+        {session?.role === 'DisputeAdmin' ? (
+          <Link to="/disputes/new" className="button-link">
+            <FontAwesomeIcon icon={faPlus} />
+            Raise a dispute
+          </Link>
+        ) : null}
       </div>
 
       {isError ? <ErrorBanner title="Could not load disputes" message={error.message} /> : null}
 
-      {isPending ? <p>Loading disputes...</p> : null}
+      {isPending ? (
+        <p className="note">
+          <FontAwesomeIcon icon={faSpinner} spin />
+          Loading disputes...
+        </p>
+      ) : null}
 
-      {data && data.length === 0 ? <p>No disputes match this filter.</p> : null}
+      {data && data.length === 0 ? (
+        <p className="note">
+          <FontAwesomeIcon icon={faInbox} />
+          No disputes match this filter.
+        </p>
+      ) : null}
 
       {data && data.length > 0 ? (
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Merchant</th>
-              <th scope="col" className="numeric">
-                Amount
-              </th>
-              <th scope="col">Transaction date</th>
-              <th scope="col">Status</th>
-              <th scope="col">Raised</th>
-              <th scope="col">Detail</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((dispute) => (
-              <tr key={dispute.id}>
-                <td>{dispute.merchantName}</td>
-                <td className="numeric">
-                  {formatAmount(dispute.transactionAmount, dispute.transactionCurrency)}
-                </td>
-                <td>{formatDateTime(dispute.transactionDate)}</td>
-                <td>
-                  <StatusBadge status={dispute.status} />
-                </td>
-                <td>{formatDateTime(dispute.createdAt)}</td>
-                <td>
-                  <Link to={`/disputes/${dispute.id}`}>View</Link>
-                </td>
+        <div className="table-scroll" role="region" aria-label="Disputes table" tabIndex={0}>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Merchant</th>
+                <th scope="col" className="numeric">
+                  Amount
+                </th>
+                <th scope="col">Transaction date</th>
+                <th scope="col">Status</th>
+                <th scope="col">Raised</th>
+                <th scope="col">Detail</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((dispute) => (
+                <tr key={dispute.id}>
+                  <td>{dispute.merchantName}</td>
+                  <td className="numeric">
+                    {formatAmount(dispute.transactionAmount, dispute.transactionCurrency)}
+                  </td>
+                  <td>{formatDateTime(dispute.transactionDate)}</td>
+                  <td>
+                    <StatusBadge status={dispute.status} />
+                  </td>
+                  <td>{formatDateTime(dispute.createdAt)}</td>
+                  <td>
+                    <Link to={`/disputes/${dispute.id}`} className="cell-action">
+                      View
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : null}
     </section>
   )

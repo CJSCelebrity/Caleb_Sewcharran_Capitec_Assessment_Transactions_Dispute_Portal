@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faRightToBracket } from '@fortawesome/free-solid-svg-icons'
 import { ApiError } from '../api/client'
 import { useAuth } from '../auth/useAuth'
 import { ErrorBanner } from '../components/ErrorBanner'
@@ -47,9 +49,9 @@ export function SignInPage() {
   }
 
   return (
-    <section className="card" style={{ maxWidth: '26rem', margin: '3rem auto' }}>
+    <section className="card auth-card">
       <h1>Sign in</h1>
-      <p style={{ color: 'var(--text-muted)' }}>Use a seeded portal account.</p>
+      <p className="note">Use a seeded portal account.</p>
 
       {submitError ? <ErrorBanner title={submitError} /> : null}
 
@@ -68,6 +70,7 @@ export function SignInPage() {
         </Field>
 
         <button type="submit" disabled={isSubmitting}>
+          <FontAwesomeIcon icon={faRightToBracket} />
           {isSubmitting ? 'Signing in...' : 'Sign in'}
         </button>
       </form>

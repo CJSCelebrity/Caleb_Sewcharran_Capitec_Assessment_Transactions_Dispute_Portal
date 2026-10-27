@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { ApiError } from '../api/client'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { Field } from '../components/Field'
@@ -56,9 +58,9 @@ export function NewDisputePage() {
   }
 
   return (
-    <section className="card" style={{ maxWidth: '40rem' }}>
+    <section className="card page-form">
       <h1>Raise a dispute</h1>
-      <p style={{ color: 'var(--text-muted)' }}>
+      <p className="note">
         The disputed transaction is owned by another service, so enter its details by hand. The
         dispute starts as Initiated.
       </p>
@@ -105,11 +107,14 @@ export function NewDisputePage() {
           <textarea id="reason" rows={4} maxLength={500} {...register('reason')} />
         </Field>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
+        <div className="form-actions">
           <button type="submit" disabled={isSubmitting}>
+            <FontAwesomeIcon icon={faPlus} />
             {isSubmitting ? 'Raising...' : 'Raise dispute'}
           </button>
-          <Link to="/disputes">Cancel</Link>
+          <Link to="/disputes" className="button-ghost">
+            Cancel
+          </Link>
         </div>
       </form>
     </section>

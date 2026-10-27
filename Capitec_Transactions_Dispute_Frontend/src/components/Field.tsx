@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 
 export function Field({
   id,
@@ -17,6 +19,7 @@ export function Field({
       {children}
       {error ? (
         <span className="field-error" role="alert">
+          <FontAwesomeIcon icon={faCircleExclamation} />
           {error}
         </span>
       ) : null}

@@ -80,3 +80,92 @@ The raise action is hidden from a ReadOnly user and the advance button is not re
 - There is no token refresh. After eight hours the user signs in again.
 - There is no transactions service to query, so the transaction id, amount, currency, date and merchant are typed by hand on the raise form and nothing checks that the transaction exists.
 - The list has no paging, sorting or search, because the API offers none. This is fine at demo scale and needs server support before the table grows.
+
+## Amendment - 2026-10-27
+
+Recorded when the portal was restyled. No behaviour, contract, route or role rule changed; this amendment covers appearance only.
+
+**Superseded**
+
+Decision 4 above described the stylesheet as neutral banking tokens that were "not official Capitec brand values" and invited the three `--brand-*` values to be swapped. That has now happened, and the swap turned out to be larger than three values.
+
+**The palette**
+
+Five colours, each with a job rather than a decorative role:
+
+- **Blue** is primary. It carries the header ink, every primary action, links, and the Initiated status.
+- **Gold** marks the Under investigation status, and is the structural accent: the rule under the app header, the brand mark, and the focus ring.
+- **Green** marks the Resolved status.
+- **Black** is the ink, from near black headings through to muted supporting text.
+- **Red** is reserved exclusively for failure, so it never competes with gold for attention.
+
+The three statuses take the three hues in progression order, so the status column can be scanned by colour while still reading as text. These remain approximations rather than official brand hexes.
+
+**Structure**
+
+The stylesheet is now two layers. Fixed primitive ramps, then semantic tokens that components reference. A component rule that names a primitive directly is treated as a bug, because it will not survive the theme switch. The two deliberate exceptions are the gold brand mark and the gold header rule, which are identical in both themes by intent.
+
+**Icons**
+
+Added `@fortawesome/react-fontawesome` with the free solid set, thirteen icons imported individually rather than through the global library so the bundle carries only what is used. The cost measured out at 27KB gzipped, almost all of it the core runtime rather than the glyphs.
+
+Every icon is decorative and sits beside a visible text label, so all of them keep the default `aria-hidden="true"` and none is given a `title`. On the installed react-fontawesome 3.x a `title` is silently ignored anyway, so passing one would only mislead a reader into thinking the icon is announced. Worth knowing for any future downgrade: the 0.2.x line did render a real `<svg><title>`, and title text counts toward `textContent`, which would break the exact match assertions on the status badge and on two validation messages.
+
+The status badges are the one place the icons do more than decorate. Each status now has its own glyph, so status is carried by shape as well as colour and text, and colour stops being a load bearing channel.
+
+**Dark mode**
+
+The portal follows the operating system through `prefers-color-scheme`. There is no toggle, so no new functionality and no new state. Only the semantic layer re-points; no hue is redefined. Three inversions are worth knowing: the focus ring moves from gold 700 to gold 400, because gold 700 disappears on a dark ground while gold 500 fails the 3:1 contrast floor on a light one; the status chips move from solid pastel fills to low alpha tints of the same hue, because the pastels glare; and the status glyphs need no override at all because they inherit `currentColor`.
+
+Two placement details are load bearing. `color-scheme: light dark` on `html` is what makes the native date picker on the raise form follow the theme. The dark block sits last in the file because a media query adds no specificity, so its two component level overrides would otherwise lose to their light counterparts defined further down.
+
+**Constraint that shaped the work**
+
+The test suite pins the markup harder than it looks. Three assertions in particular dictated implementation: the status badge's text content must equal the status label exactly; the formatted amount must stay a single text node, so the currency symbol is not split out and nothing is added to that cell; and the detail page heading must contain only the merchant name, so no icon went into it.
+
+The disputes table also had to stay a real table. Restyling table parts with `display:` is the usual way to make a table responsive, and it would have passed the suite while silently stripping the table from the accessibility tree, so the table is wrapped in a scrolling region instead. That wrapper carries `role="region"`, a label and `tabIndex={0}`, because otherwise making it scrollable would have put the overflow beyond reach of a keyboard.
+
+Two regression tests were added to hold the invariants that a future change could break without any visible symptom: that the list is still a real table with its six column headers, and that the status badge's text content is still exactly the label.
+
+**Added**
+
+One heading, `Disputes`, on the list page, which previously had no `h1` at all.
+
+## Amendment 2 - 2026-10-27
+
+Adds a theme toggle. This supersedes one sentence in the amendment above, which recorded that the portal followed the operating system with "no toggle, so no new functionality and no new state". A toggle was then asked for, so both halves of that sentence no longer hold: this is new functionality and it does persist state.
+
+## Decision
+
+Two themes, light and dark, and a single header button that flips between them. There is no third "follow the system" mode.
+
+A three state control was built first and then removed on request. Recording why, because the argument for it is the obvious one and will come up again: it would have let a reader return to following the OS after overriding it, which two states cannot offer. It was rejected as not worth the extra mode in the interface. The portal is an internal tool whose users will set this once, so a cycle through three states costs every user clarity in order to serve a rare case.
+
+The OS preference is not ignored entirely. On a first visit, with nothing stored, the initial theme seeds from `prefers-color-scheme`, so a reader whose machine is dark does not get a light portal on first load. That is a default value, not a mode: after the first toggle the stored choice always wins, and nothing tracks the OS once the page has loaded.
+
+The button shows the glyph of the theme it will switch to, a moon while light and a sun while dark, and its accessible name says the same thing.
+
+## Consequences
+
+**Positive**
+
+- One control, two states, no hidden third behaviour to explain.
+- A dark machine still gets a dark portal on first load, without a mode to maintain.
+- The choice survives a reload, and is stored as the literal theme rather than as an intent, so there is nothing to re-resolve.
+- No media query subscription at runtime, so the provider has no listener to attach, leak or clean up.
+
+**Negative**
+
+- Once a reader has toggled, a later change to their OS theme is not picked up. Clearing the `capitec-disputes-theme` key is the only way back to OS seeding. This is the accepted cost of dropping the third mode.
+- The resolution rule exists twice: in `src/theme/theme.ts` and as a small inline script in `index.html`. The duplication is deliberate and is the standard way to avoid a flash of the wrong theme, since the attribute has to be on the root element before first paint and React mounts too late for that. The storage key and the two attribute values must stay in step across those files, and a comment in `index.html` says so.
+- The stylesheet no longer uses `prefers-color-scheme` at all. The dark palette hangs off `data-theme` on the root element, so the theme depends on JavaScript. Acceptable only because the portal is a React single page app that cannot render without it anyway.
+
+## Implementation notes worth keeping
+
+Switching from a media query to an attribute selector removed a specificity hazard rather than adding one. The previous dark block had to sit last in the file because a media query contributes nothing to specificity, so its two component level overrides would otherwise have lost to their light counterparts. `:root[data-theme='dark']` outranks a bare `:root`, so those overrides now win on specificity and placement is merely tidy. The banner comment in the stylesheet was corrected to say so, because the old one gave a reason that had stopped being true.
+
+`color-scheme` moved from a single `light dark` declaration to one value per theme, so the native date picker on the raise form follows the chosen theme rather than the OS.
+
+`window.matchMedia` is undefined in this project's jsdom, not merely inert. The one remaining read of it, the first visit seed, is therefore optional chained and falls back to light. A test covers that fallback, because an unguarded read would have thrown the moment the provider mounted under test.
+
+The toggle is the one icon only control in the portal, so unlike every other icon its meaning cannot come from an adjacent label. The glyph stays decorative and `aria-hidden`, and the button carries an `aria-label` naming the theme the next click will select. Tests assert that name, assert the button has no text content, and assert that repeated clicking only ever produces the two themes.
