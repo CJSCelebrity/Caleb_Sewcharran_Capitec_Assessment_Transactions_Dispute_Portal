@@ -6,8 +6,9 @@ import { server } from '../test/msw/server'
 import { renderWithProviders } from '../test/renderWithProviders'
 import { NewDisputePage } from './NewDisputePage'
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
 async function fillValidForm() {
-  await userEvent.type(screen.getByLabelText(/transaction id/i), '0199c0de-1001-7000-8000-000000000009')
   await userEvent.type(screen.getByLabelText(/amount/i), '250.00')
   await userEvent.clear(screen.getByLabelText(/currency/i))
   await userEvent.type(screen.getByLabelText(/currency/i), 'zar')
@@ -54,15 +55,6 @@ describe('NewDisputePage', () => {
     expect(body).not.toHaveProperty('id')
   })
 
-  it('blocks submission and shows a field error for a bad transaction id', async () => {
-    renderWithProviders(<NewDisputePage />)
-
-    await userEvent.type(screen.getByLabelText(/transaction id/i), 'not-a-uuid')
-    await userEvent.click(screen.getByRole('button', { name: /raise dispute/i }))
-
-    expect(await screen.findByText(/valid transaction id/i)).toBeInTheDocument()
-  })
-
   it('rejects an amount with three decimal places before sending', async () => {
     renderWithProviders(<NewDisputePage />)
 
@@ -103,5 +95,60 @@ describe('NewDisputePage', () => {
     await userEvent.click(screen.getByRole('button', { name: /raise dispute/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/permission/i)
+  })
+  it('does not ask the user for a transaction id', () => {
+    renderWithProviders(<NewDisputePage />)
+
+    expect(screen.queryByLabelText(/transaction id/i)).toBeNull()
+  })
+
+  it('generates a version 4 uuid as the transaction id', async () => {
+    let body: Record<string, unknown> = {}
+    server.use(
+      http.post('*/api/disputes', async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json({ id: 'new-id', status: 'Initiated' }, { status: 201 })
+      }),
+    )
+    renderWithProviders(<NewDisputePage />)
+
+    await fillValidForm()
+    await userEvent.click(screen.getByRole('button', { name: /raise dispute/i }))
+
+    await waitFor(() => expect(body.transactionId).toBeDefined())
+    expect(String(body.transactionId)).toMatch(UUID)
+  })
+
+  it('reuses the same transaction id when a rejected submission is retried', async () => {
+    const sent: unknown[] = []
+    server.use(
+      http.post('*/api/disputes', async ({ request }) => {
+        const body = (await request.json()) as Record<string, unknown>
+        sent.push(body.transactionId)
+
+        if (sent.length === 1) {
+          return HttpResponse.json(
+            {
+              title: 'One or more validation errors occurred.',
+              status: 400,
+              errors: { MerchantName: ['The merchant is not recognised.'] },
+            },
+            { status: 400, headers: { 'content-type': 'application/problem+json' } },
+          )
+        }
+
+        return HttpResponse.json({ id: 'new-id', status: 'Initiated' }, { status: 201 })
+      }),
+    )
+    renderWithProviders(<NewDisputePage />)
+
+    await fillValidForm()
+    await userEvent.click(screen.getByRole('button', { name: /raise dispute/i }))
+    await screen.findByText('The merchant is not recognised.')
+
+    await userEvent.click(screen.getByRole('button', { name: /raise dispute/i }))
+
+    await waitFor(() => expect(sent).toHaveLength(2))
+    expect(sent[0]).toBe(sent[1])
   })
 })

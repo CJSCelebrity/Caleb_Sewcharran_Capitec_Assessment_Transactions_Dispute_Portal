@@ -169,3 +169,39 @@ Switching from a media query to an attribute selector removed a specificity haza
 `window.matchMedia` is undefined in this project's jsdom, not merely inert. The one remaining read of it, the first visit seed, is therefore optional chained and falls back to light. A test covers that fallback, because an unguarded read would have thrown the moment the provider mounted under test.
 
 The toggle is the one icon only control in the portal, so unlike every other icon its meaning cannot come from an adjacent label. The glyph stays decorative and `aria-hidden`, and the button carries an `aria-label` naming the theme the next click will select. Tests assert that name, assert the button has no text content, and assert that repeated clicking only ever produces the two themes.
+
+## Amendment 3 - 2026-10-28
+
+Two changes, recorded together because they shipped together.
+
+### The transaction id is generated, not entered
+
+The raise form no longer asks for a transaction id. It mints one with `crypto.randomUUID()` and merges it into the payload at submit.
+
+Asking a person to hand-type a 36 character UUID was the worst input in the portal. The value carried nothing the user supplied, it could not be checked by eye, and one wrong character was the likeliest reason a valid dispute would be refused.
+
+**Where the boundary moved.** `createDisputeSchema` now describes only what a human enters, so it covers five fields and no longer validates a UUID. The wire contract did not change: `CreateDisputePayload` is the schema output plus `transactionId`, which is why nothing under `src/api` or `src/hooks` needed editing and the request still carries exactly six keys.
+
+**The id is minted once per form mount, not per submit.** The submit path already retries: a server 400 maps onto a field, the user corrects it and submits again. Generating inside the handler would have sent a different id on each attempt, so one dispute could be refused under one id and accepted under another. A test asserts that a retry after a rejection reuses the first id, because no visible behaviour would reveal the difference. That test was deliberately checked for teeth: moving the generator into the submit handler fails it, and fails nothing else in the suite.
+
+**Two things this also fixed.** A server 400 naming `TransactionId` used to be routed to a form field; now that no such field exists it falls through to the banner, where it is actually readable. And `useState(() => crypto.randomUUID())` is written with the arrow deliberately: passing `crypto.randomUUID` detached from `crypto` throws a `TypeError` in Chrome and in this project's jsdom.
+
+**Worth knowing: the id points at nothing.** A transaction id is meant to reference a transaction that already happened in another system. A GUID minted in the browser references nothing, and two disputes about the same real purchase will now carry different ids. The backend permits this, with `[Required] Guid?`, a non-unique index, no foreign key and no existence check, and with no transaction service in this solution there is nothing better to put there. Read the field as a per-dispute reference rather than as a real transaction pointer. If a transaction service is ever introduced, this is the first decision that has to be revisited, and the id should then come from a lookup rather than from the client.
+
+**Removed.** The test covering a malformed hand-typed UUID was deleted rather than rewritten, because the behaviour it guarded no longer exists. Leaving it would have failed rather than passed, since zod ignores unknown keys and the malformed value would simply have parsed.
+
+### Figtree replaces the system font stack
+
+**Superseded.** The Known Limitations of the restyle amendment said the portal used no webfont and that typography rested on the system stack, so the same build rendered in Segoe UI Variable, SF or Roboto depending on the platform. That is no longer true.
+
+`--sans` now leads with `Figtree`, served from Google Fonts as a variable woff2 over the `wght@300..900` axis. The portal uses 400, 500, 600 and 700, all inside that axis, so every weight is a true weight rather than a synthetic bold, and one file covers all of them.
+
+The system stack stays behind Figtree on purpose. The request carries `display=swap`, so text paints immediately in the OS font and swaps when Figtree arrives, and if the CDN is unreachable the portal renders in the system font with no layout break.
+
+**Delivery.** A stylesheet link in `index.html`, with preconnects to `fonts.googleapis.com` and `fonts.gstatic.com`. The `crossorigin` attribute on the gstatic preconnect is load bearing, since font files are fetched in CORS mode and a preconnect without it warms a connection the browser will not reuse. Self-hosting through `@fontsource-variable/figtree` was considered and rejected in favour of keeping the dependency list unchanged; the trade accepted is two external hosts contacted on every load, and a portal that falls back to system fonts offline. Note for anyone who revisits that choice: the npm package registers the family as `Figtree Variable`, not `Figtree`, so swapping delivery means changing the token too.
+
+Italics were deliberately not requested. Figtree ships an italic axis and nothing in the portal is italic.
+
+`--mono` is unchanged. Figtree has no monospace companion, and `.mono` still carries the transaction id and the session email.
+
+**Not covered by tests.** jsdom neither loads `index.html` nor fetches external stylesheets, so no automated check can observe the typeface. Verification is visual, by reading the rendered font in the Computed panel rather than judging by eye, plus one offline reload to prove the fallback.

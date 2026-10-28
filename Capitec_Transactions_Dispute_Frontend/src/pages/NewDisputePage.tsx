@@ -8,29 +8,30 @@ import { ApiError } from '../api/client'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { Field } from '../components/Field'
 import { createDisputeSchema } from '../domain/createDisputeSchema'
-import type { CreateDisputeForm, CreateDisputePayload } from '../domain/createDisputeSchema'
+import type { CreateDisputeForm, CreateDisputeValues } from '../domain/createDisputeSchema'
 import { useCreateDisputeMutation } from '../hooks/useDisputes'
 
 export function NewDisputePage() {
   const navigate = useNavigate()
   const createDispute = useCreateDisputeMutation()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [transactionId] = useState(() => crypto.randomUUID())
 
   const {
     register,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<CreateDisputeForm, unknown, CreateDisputePayload>({
+  } = useForm<CreateDisputeForm, unknown, CreateDisputeValues>({
     resolver: zodResolver(createDisputeSchema),
     defaultValues: { transactionCurrency: 'ZAR' },
   })
 
-  const onSubmit = async (payload: CreateDisputePayload) => {
+  const onSubmit = async (values: CreateDisputeValues) => {
     setSubmitError(null)
 
     try {
-      const created = await createDispute.mutateAsync(payload)
+      const created = await createDispute.mutateAsync({ ...values, transactionId })
       navigate(`/disputes/${created.id}`, { replace: true })
     } catch (error) {
       if (!(error instanceof ApiError)) {
@@ -68,15 +69,6 @@ export function NewDisputePage() {
       {submitError ? <ErrorBanner title={submitError} /> : null}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <Field id="transactionId" label="Transaction id" error={errors.transactionId?.message}>
-          <input
-            id="transactionId"
-            className="mono"
-            placeholder="0199c0de-1001-7000-8000-000000000001"
-            {...register('transactionId')}
-          />
-        </Field>
-
         <Field id="transactionAmount" label="Amount" error={errors.transactionAmount?.message}>
           <input
             id="transactionAmount"
