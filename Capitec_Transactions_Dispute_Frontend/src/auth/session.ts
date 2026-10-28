@@ -6,6 +6,7 @@ export type Session = {
   accessToken: string
   email: string
   role: Role
+  customerId: string | null
   expiresAtUtc: string
 }
 

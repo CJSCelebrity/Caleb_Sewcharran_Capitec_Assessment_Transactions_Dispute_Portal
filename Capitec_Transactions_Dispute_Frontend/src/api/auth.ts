@@ -1,12 +1,13 @@
 import { apiFetch } from './client'
 
-export type Role = 'ReadOnly' | 'DisputeAdmin'
+export type Role = 'Customer' | 'ReadOnly' | 'DisputeAdmin'
 
 export type LoginResponse = {
   accessToken: string
   expiresAtUtc: string
   email: string
   role: Role
+  customerId: string | null
 }
 
 export function login(email: string, password: string): Promise<LoginResponse> {

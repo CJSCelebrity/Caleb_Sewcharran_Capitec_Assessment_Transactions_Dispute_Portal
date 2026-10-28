@@ -258,6 +258,22 @@ a:hover {
   color: var(--text-muted);
 }
 
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--link);
+  font-size: var(--step--1);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
 .theme-toggle {
   width: 2.75rem;
   padding: 0;
@@ -695,6 +711,72 @@ td {
 }
 
 /* ==========================================================================
+   Dispute status timeline. A real ordered list; the rail is decoration only.
+   Each dot reuses the status triples, so the timeline and the badges agree.
+   ========================================================================== */
+
+.timeline {
+  list-style: none;
+  margin: var(--space-4) 0 var(--space-6);
+  padding: 0 0 0 var(--space-2);
+}
+
+.timeline-entry {
+  position: relative;
+  display: flex;
+  gap: var(--space-4);
+  padding: 0 0 var(--space-5) var(--space-5);
+  border-left: 2px solid var(--border);
+}
+
+.timeline-entry:last-child {
+  padding-bottom: 0;
+  border-left-color: transparent;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: calc(-1 * var(--space-2));
+  top: 0.15em;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 0 0 3px var(--surface);
+}
+
+.timeline-dot.badge-initiated {
+  background: var(--status-initiated-fg);
+}
+
+.timeline-dot.badge-under-investigation {
+  background: var(--status-investigating-fg);
+}
+
+.timeline-dot.badge-resolved {
+  background: var(--status-resolved-fg);
+}
+
+.timeline-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.timeline-label {
+  color: var(--heading);
+  font-weight: 600;
+}
+
+.timeline-meta {
+  color: var(--text-muted);
+  font-size: var(--step--1);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
    Icons. Sized from the type scale, never from the size prop.
    ========================================================================== */
 
@@ -797,6 +879,12 @@ button .svg-inline--fa,
    ========================================================================== */
 
 @media (max-width: 48rem) {
+  .app-header nav {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: flex-end;
+  }
+
   .app-header__inner {
     padding: var(--space-3) var(--space-4);
   }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { server } from '../test/msw/server'
-import { advanceDisputeStatus, createDispute, listDisputes } from './disputes'
+import { advanceDisputeStatus, createDispute, getDisputeHistory, listDisputes } from './disputes'
 
 describe('listDisputes', () => {
   it('omits the status query param when no filter is given', async () => {
@@ -45,10 +45,6 @@ describe('createDispute', () => {
 
     const payload = {
       transactionId: '0199c0de-1001-7000-8000-000000000009',
-      transactionAmount: 250,
-      transactionCurrency: 'ZAR',
-      transactionDate: '2026-10-20T10:00:00.000Z',
-      merchantName: 'Checkers',
       reason: 'Goods not received.',
     }
 
@@ -56,6 +52,49 @@ describe('createDispute', () => {
 
     expect(body).toEqual(payload)
     expect(created.id).toBe('new-id')
+  })
+
+  it('sends only the transaction id and the reason', async () => {
+    let body: Record<string, unknown> = {}
+    server.use(
+      http.post('*/api/disputes', async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>
+        return HttpResponse.json({ id: 'new-id' }, { status: 201 })
+      }),
+    )
+
+    await createDispute({
+      transactionId: '0199c0de-1001-7000-8000-000000000009',
+      reason: 'Goods not received.',
+    })
+
+    expect(Object.keys(body).sort()).toEqual(['reason', 'transactionId'])
+  })
+})
+
+describe('getDisputeHistory', () => {
+  it('reads the history endpoint for the dispute', async () => {
+    let url = ''
+    server.use(
+      http.get('*/api/disputes/abc/history', ({ request }) => {
+        url = request.url
+        return HttpResponse.json([
+          {
+            fromStatus: null,
+            toStatus: 'Initiated',
+            changedBy: 'thandi@example.test',
+            changedAt: '2026-10-21T08:00:00Z',
+          },
+        ])
+      }),
+    )
+
+    const history = await getDisputeHistory('abc')
+
+    expect(url).toContain('/api/disputes/abc/history')
+    expect(history).toHaveLength(1)
+    expect(history[0].fromStatus).toBeNull()
+    expect(history[0].toStatus).toBe('Initiated')
   })
 })
 

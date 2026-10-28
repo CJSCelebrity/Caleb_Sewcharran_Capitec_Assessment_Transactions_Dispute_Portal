@@ -33,6 +33,7 @@ describe('AuthProvider', () => {
           expiresAtUtc: future(),
           email: 'admin@capitec.test',
           role: 'DisputeAdmin',
+          customerId: null,
         }),
       ),
     )
@@ -46,6 +47,7 @@ describe('AuthProvider', () => {
       email: 'admin@capitec.test',
       role: 'DisputeAdmin',
       accessToken: 'signed-token',
+      customerId: null,
     })
     expect(localStorage.getItem(SESSION_STORAGE_KEY)).toContain('signed-token')
   })
@@ -127,5 +129,49 @@ describe('AuthProvider', () => {
 
     await waitFor(() => expect(result.current.session).toBeNull())
     expect(localStorage.getItem(SESSION_STORAGE_KEY)).toBeNull()
+  })
+
+  it('stores the customer id of a customer sign in', async () => {
+    server.use(
+      http.post('*/api/auth/login', () =>
+        HttpResponse.json({
+          accessToken: 'signed-token',
+          expiresAtUtc: future(),
+          email: 'thandi@example.test',
+          role: 'Customer',
+          customerId: '0199c0de-0003-7000-8000-000000000001',
+        }),
+      ),
+    )
+    const { result } = renderHook(() => useAuth(), { wrapper: Wrapper })
+
+    await act(async () => {
+      await result.current.signIn('thandi@example.test', 'Thandi#2026')
+    })
+
+    expect(result.current.session).toMatchObject({
+      role: 'Customer',
+      customerId: '0199c0de-0003-7000-8000-000000000001',
+    })
+    expect(localStorage.getItem(SESSION_STORAGE_KEY)).toContain(
+      '0199c0de-0003-7000-8000-000000000001',
+    )
+  })
+
+  it('restores the customer id from a stored session', () => {
+    localStorage.setItem(
+      SESSION_STORAGE_KEY,
+      JSON.stringify({
+        accessToken: 'stored',
+        expiresAtUtc: future(),
+        email: 'thandi@example.test',
+        role: 'Customer',
+        customerId: '0199c0de-0003-7000-8000-000000000001',
+      }),
+    )
+
+    const { result } = renderHook(() => useAuth(), { wrapper: Wrapper })
+
+    expect(result.current.session?.customerId).toBe('0199c0de-0003-7000-8000-000000000001')
   })
 })

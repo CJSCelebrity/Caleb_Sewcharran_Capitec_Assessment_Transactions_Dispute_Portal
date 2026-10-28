@@ -2,11 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { ReactNode } from 'react'
 import { server } from '../test/msw/server'
+import { withRole } from '../test/withRole'
 import { renderWithProviders } from '../test/renderWithProviders'
-import { AuthContext } from '../auth/context'
-import type { Role } from '../api/auth'
 import { DisputesListPage } from './DisputesListPage'
 
 const takealot = {
@@ -20,25 +18,6 @@ const takealot = {
   status: 'Initiated',
   createdAt: '2026-10-13T07:30:00+00:00',
   resolvedAt: null,
-}
-
-function withRole(role: Role, children: ReactNode) {
-  return (
-    <AuthContext.Provider
-      value={{
-        session: {
-          accessToken: 'token',
-          email: `${role}@capitec.test`,
-          role,
-          expiresAtUtc: new Date(Date.now() + 3_600_000).toISOString(),
-        },
-        signIn: async () => {},
-        signOut: () => {},
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  )
 }
 
 describe('DisputesListPage', () => {
@@ -85,12 +64,37 @@ describe('DisputesListPage', () => {
     expect(screen.queryByRole('link', { name: /raise a dispute/i })).not.toBeInTheDocument()
   })
 
-  it('shows the raise action to a DisputeAdmin', async () => {
+  it('offers a customer the way back to their transactions, which is where raising starts', async () => {
+    server.use(http.get('*/api/disputes', () => HttpResponse.json([takealot])))
+
+    renderWithProviders(withRole('Customer', <DisputesListPage />))
+
+    expect(await screen.findByRole('link', { name: /view transactions/i })).toHaveAttribute(
+      'href',
+      '/transactions',
+    )
+  })
+
+  it('offers staff no raise action, because only a customer can raise a dispute', async () => {
     server.use(http.get('*/api/disputes', () => HttpResponse.json([takealot])))
 
     renderWithProviders(withRole('DisputeAdmin', <DisputesListPage />))
 
-    expect(await screen.findByRole('link', { name: /raise a dispute/i })).toBeInTheDocument()
+    await screen.findByRole('row', { name: /Takealot/ })
+
+    expect(screen.queryByRole('link', { name: /raise a dispute/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /view transactions/i })).not.toBeInTheDocument()
+  })
+
+  it('heads the list as a personal history for a customer and as the queue for staff', async () => {
+    server.use(http.get('*/api/disputes', () => HttpResponse.json([takealot])))
+
+    const customer = renderWithProviders(withRole('Customer', <DisputesListPage />))
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('My disputes')
+    customer.unmount()
+
+    renderWithProviders(withRole('ReadOnly', <DisputesListPage />))
+    expect(await screen.findByRole('heading', { level: 1 })).toHaveTextContent('Disputes')
   })
 
   it('shows an error when the list request fails', async () => {
@@ -109,7 +113,41 @@ describe('DisputesListPage', () => {
     const table = await screen.findByRole('table')
 
     expect(within(table).getAllByRole('row')).toHaveLength(2)
-    expect(within(table).getAllByRole('columnheader')).toHaveLength(6)
+    expect(within(table).getAllByRole('columnheader').map((header) => header.textContent)).toEqual([
+      'Merchant',
+      'Amount',
+      'Transaction date',
+      'Status',
+      'Raised',
+      'Resolved',
+      'Detail',
+    ])
+  })
+
+  it('shows when a dispute was resolved, which is what makes the list a history', async () => {
+    server.use(
+      http.get('*/api/disputes', () =>
+        HttpResponse.json([
+          { ...takealot, status: 'Resolved', resolvedAt: '2026-10-20T14:00:00+00:00' },
+        ]),
+      ),
+    )
+
+    renderWithProviders(withRole('Customer', <DisputesListPage />))
+
+    const row = await screen.findByRole('row', { name: /Takealot/ })
+
+    expect(within(row).getAllByRole('cell')[5].textContent).not.toBe('Not resolved')
+  })
+
+  it('marks an unresolved dispute as not resolved', async () => {
+    server.use(http.get('*/api/disputes', () => HttpResponse.json([takealot])))
+
+    renderWithProviders(withRole('Customer', <DisputesListPage />))
+
+    const row = await screen.findByRole('row', { name: /Takealot/ })
+
+    expect(within(row).getAllByRole('cell')[5]).toHaveTextContent('Not resolved')
   })
 
   it('keeps the status badge text free of icon content', async () => {

@@ -6,12 +6,14 @@ import { useAuth } from '../auth/useAuth'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { StatusBadge } from '../components/StatusBadge'
 import { formatAmount, formatDateTime, nextStatus, STATUS_LABELS } from '../domain/dispute'
-import { useAdvanceStatusMutation, useDisputeQuery } from '../hooks/useDisputes'
+import { DisputeTimeline } from '../components/DisputeTimeline'
+import { useAdvanceStatusMutation, useDisputeHistoryQuery, useDisputeQuery } from '../hooks/useDisputes'
 
 export function DisputeDetailPage() {
   const { id = '' } = useParams()
   const { session } = useAuth()
   const { data: dispute, isPending, isError, error } = useDisputeQuery(id)
+  const history = useDisputeHistoryQuery(id)
   const advance = useAdvanceStatusMutation(id)
 
   if (isPending) {
@@ -77,6 +79,13 @@ export function DisputeDetailPage() {
         <dt>Resolved</dt>
         <dd>{dispute.resolvedAt ? formatDateTime(dispute.resolvedAt) : 'Not yet resolved'}</dd>
       </dl>
+
+      <h2>History</h2>
+      <DisputeTimeline
+        history={history.data}
+        isPending={history.isPending}
+        isError={history.isError}
+      />
 
       {canAdvance && next ? (
         <button type="button" disabled={advance.isPending} onClick={() => advance.mutate(next)}>

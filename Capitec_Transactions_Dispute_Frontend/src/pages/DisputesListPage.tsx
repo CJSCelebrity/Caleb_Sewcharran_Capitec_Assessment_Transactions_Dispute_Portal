@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronRight, faInbox, faPlus, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faChevronRight, faInbox, faReceipt, faSpinner } from '@fortawesome/free-solid-svg-icons'
 import { useAuth } from '../auth/useAuth'
 import { ErrorBanner } from '../components/ErrorBanner'
 import { StatusBadge } from '../components/StatusBadge'
@@ -11,12 +11,13 @@ import { useDisputesQuery } from '../hooks/useDisputes'
 
 export function DisputesListPage() {
   const { session } = useAuth()
+  const isCustomer = session?.role === 'Customer'
   const [filter, setFilter] = useState<StatusFilter>('All')
   const { data, isPending, isError, error } = useDisputesQuery(filter)
 
   return (
     <section>
-      <h1>Disputes</h1>
+      <h1>{isCustomer ? 'My disputes' : 'Disputes'}</h1>
 
       <div className="toolbar">
         <div className="field">
@@ -35,10 +36,10 @@ export function DisputesListPage() {
           </select>
         </div>
 
-        {session?.role === 'DisputeAdmin' ? (
-          <Link to="/disputes/new" className="button-link">
-            <FontAwesomeIcon icon={faPlus} />
-            Raise a dispute
+        {isCustomer ? (
+          <Link to="/transactions" className="button-link">
+            <FontAwesomeIcon icon={faReceipt} />
+            View transactions
           </Link>
         ) : null}
       </div>
@@ -60,7 +61,7 @@ export function DisputesListPage() {
       ) : null}
 
       {data && data.length > 0 ? (
-        <div className="table-scroll" role="region" aria-label="Disputes table" tabIndex={0}>
+        <div className="table-scroll" role="region" aria-label={isCustomer ? 'My disputes table' : 'Disputes table'} tabIndex={0}>
           <table>
             <thead>
               <tr>
@@ -71,6 +72,7 @@ export function DisputesListPage() {
                 <th scope="col">Transaction date</th>
                 <th scope="col">Status</th>
                 <th scope="col">Raised</th>
+                <th scope="col">Resolved</th>
                 <th scope="col">Detail</th>
               </tr>
             </thead>
@@ -86,6 +88,13 @@ export function DisputesListPage() {
                     <StatusBadge status={dispute.status} />
                   </td>
                   <td>{formatDateTime(dispute.createdAt)}</td>
+                  <td>
+                    {dispute.resolvedAt ? (
+                      formatDateTime(dispute.resolvedAt)
+                    ) : (
+                      <span className="text-muted">Not resolved</span>
+                    )}
+                  </td>
                   <td>
                     <Link to={`/disputes/${dispute.id}`} className="cell-action">
                       View

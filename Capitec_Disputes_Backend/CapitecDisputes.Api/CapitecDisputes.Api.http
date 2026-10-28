@@ -1,35 +1,87 @@
-@CapitecDisputes.Api_HostAddress = http://localhost:8080
-@token = paste-a-token-from-the-DevTokenGenerator-test
+@host = http://localhost:5089
+@customerToken = paste-the-accessToken-from-a-Customer-login
+@adminToken = paste-the-accessToken-from-a-DisputeAdmin-login
 
-### List every dispute
-GET {{CapitecDisputes.Api_HostAddress}}/api/disputes
-Authorization: Bearer {{token}}
-
-### List only the disputes that are still initiated
-GET {{CapitecDisputes.Api_HostAddress}}/api/disputes?status=Initiated
-Authorization: Bearer {{token}}
-
-### Open the seeded initiated dispute
-GET {{CapitecDisputes.Api_HostAddress}}/api/disputes/0199c0de-0001-7000-8000-000000000001
-Authorization: Bearer {{token}}
-
-### Raise a dispute
-POST {{CapitecDisputes.Api_HostAddress}}/api/disputes
-Authorization: Bearer {{token}}
+### Sign in as a customer
+POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
-  "transactionId": "0199c0de-1001-7000-8000-000000000009",
-  "transactionAmount": 249.95,
-  "transactionCurrency": "ZAR",
-  "transactionDate": "2026-10-20T10:05:00+00:00",
-  "merchantName": "Checkers Sixty60",
+  "email": "thandi@example.test",
+  "password": "set-this-in-seed-users.csv"
+}
+
+### Sign in as a dispute admin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@capitec.test",
+  "password": "set-this-in-seed-users.csv"
+}
+
+### The caller's own transactions, each with its dispute state
+GET {{host}}/api/transactions
+Authorization: Bearer {{customerToken}}
+
+### 403, because a transaction belongs to a customer and staff have none
+GET {{host}}/api/transactions
+Authorization: Bearer {{adminToken}}
+
+### The caller's own disputes
+GET {{host}}/api/disputes
+Authorization: Bearer {{customerToken}}
+
+### Every customer's disputes, because the caller is staff
+GET {{host}}/api/disputes
+Authorization: Bearer {{adminToken}}
+
+### Only the disputes that are still initiated
+GET {{host}}/api/disputes?status=Initiated
+Authorization: Bearer {{customerToken}}
+
+### One dispute. Paste an id from a list response above
+GET {{host}}/api/disputes/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{customerToken}}
+
+### The status timeline of that dispute, oldest entry first
+GET {{host}}/api/disputes/00000000-0000-0000-0000-000000000000/history
+Authorization: Bearer {{customerToken}}
+
+### Raise a dispute. Paste the id of an undisputed transaction from
+### GET /api/transactions. Amount, currency, date and merchant are read off
+### that transaction by the server and are not part of the request.
+POST {{host}}/api/disputes
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "transactionId": "00000000-0000-0000-0000-000000000000",
   "reason": "Delivered order was missing three items."
 }
 
-### Move the seeded initiated dispute to under investigation
-PATCH {{CapitecDisputes.Api_HostAddress}}/api/disputes/0199c0de-0001-7000-8000-000000000001/status
-Authorization: Bearer {{token}}
+### 409, raising a second dispute on a transaction that already has one
+POST {{host}}/api/disputes
+Authorization: Bearer {{customerToken}}
+Content-Type: application/json
+
+{
+  "transactionId": "00000000-0000-0000-0000-000000000000",
+  "reason": "Trying again."
+}
+
+### Advance a dispute one step. Two steps at once is a 409
+PATCH {{host}}/api/disputes/00000000-0000-0000-0000-000000000000/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "UnderInvestigation"
+}
+
+### 403, because only a DisputeAdmin can change a status
+PATCH {{host}}/api/disputes/00000000-0000-0000-0000-000000000000/status
+Authorization: Bearer {{customerToken}}
 Content-Type: application/json
 
 {

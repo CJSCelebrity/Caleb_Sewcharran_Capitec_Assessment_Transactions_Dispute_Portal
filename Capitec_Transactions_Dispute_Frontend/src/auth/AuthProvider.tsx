@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       accessToken: response.accessToken,
       email: response.email,
       role: response.role,
+      customerId: response.customerId,
       expiresAtUtc: response.expiresAtUtc,
     }
 

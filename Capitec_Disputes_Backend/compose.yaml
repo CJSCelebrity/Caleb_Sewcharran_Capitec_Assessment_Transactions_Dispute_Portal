@@ -1,4 +1,4 @@
-services:
+﻿services:
   postgres:
     image: postgres:17-alpine
     environment:
@@ -26,10 +26,14 @@ services:
       ConnectionStrings__DisputesDb: "Host=postgres;Port=5432;Database=capitec_disputes;Username=capitec;Password=capitec"
       Jwt__SigningKey: ${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in .env}
       Seed__UsersFilePath: /app/seed-users.csv
+      Seed__TransactionsFilePath: /app/seed-transactions.csv
+      Seed__DisputesFilePath: /app/seed-disputes.csv
     ports:
       - "8080:8080"
     volumes:
       - ./CapitecDisputes.Api/seed-users.csv:/app/seed-users.csv:ro
+      - ./CapitecDisputes.Api/seed-transactions.csv:/app/seed-transactions.csv:ro
+      - ./CapitecDisputes.Api/seed-disputes.csv:/app/seed-disputes.csv:ro
     depends_on:
       postgres:
         condition: service_healthy

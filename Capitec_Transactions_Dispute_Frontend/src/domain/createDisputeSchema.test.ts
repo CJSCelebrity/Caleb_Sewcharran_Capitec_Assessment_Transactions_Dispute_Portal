@@ -1,53 +1,39 @@
 import { describe, expect, it } from 'vitest'
 import { createDisputeSchema } from './createDisputeSchema'
 
-const valid = {
-  transactionAmount: 250,
-  transactionCurrency: 'zar',
-  transactionDate: '2026-10-20T12:00',
-  merchantName: 'Checkers',
-  reason: 'Goods not received.',
-}
-
 describe('createDisputeSchema', () => {
-  it('uppercases the currency, matching the server', () => {
-    const parsed = createDisputeSchema.parse(valid)
+  it('accepts a reason and trims it', () => {
+    const result = createDisputeSchema.safeParse({ reason: '  Charged twice.  ' })
 
-    expect(parsed.transactionCurrency).toBe('ZAR')
+    expect(result.success).toBe(true)
+    expect(result.success && result.data.reason).toBe('Charged twice.')
   })
 
-  it('converts the local datetime input to an iso utc string', () => {
-    const parsed = createDisputeSchema.parse(valid)
+  it('rejects an empty reason', () => {
+    const result = createDisputeSchema.safeParse({ reason: '' })
 
-    expect(parsed.transactionDate).toBe(new Date('2026-10-20T12:00').toISOString())
-    expect(parsed.transactionDate.endsWith('Z')).toBe(true)
+    expect(result.success).toBe(false)
+    expect(result.success === false && result.error.issues[0].message).toBe('Enter a reason.')
   })
 
-  it('rejects an amount below the server minimum of 0.01', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, transactionAmount: 0 }).success).toBe(false)
-  })
-
-  it('rejects an amount above the server maximum of 1000000000', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, transactionAmount: 1_000_000_001 }).success).toBe(false)
-  })
-
-  it('rejects an amount with more than two decimal places', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, transactionAmount: 10.999 }).success).toBe(false)
-  })
-
-  it('rejects a currency that is not exactly three letters', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, transactionCurrency: 'RAND' }).success).toBe(false)
-  })
-
-  it('rejects a merchant name longer than 200 characters', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, merchantName: 'x'.repeat(201) }).success).toBe(false)
+  it('rejects a whitespace only reason', () => {
+    expect(createDisputeSchema.safeParse({ reason: '   ' }).success).toBe(false)
   })
 
   it('rejects a reason longer than 500 characters', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, reason: 'x'.repeat(501) }).success).toBe(false)
+    const result = createDisputeSchema.safeParse({ reason: 'a'.repeat(501) })
+
+    expect(result.success).toBe(false)
+    expect(result.success === false && result.error.issues[0].message).toBe(
+      'Reason must be 500 characters or fewer.',
+    )
   })
 
-  it('rejects an empty merchant name', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, merchantName: '   ' }).success).toBe(false)
+  it('accepts a reason of exactly 500 characters', () => {
+    expect(createDisputeSchema.safeParse({ reason: 'a'.repeat(500) }).success).toBe(true)
+  })
+
+  it('describes only the reason, so no transaction field can be entered', () => {
+    expect(Object.keys(createDisputeSchema.shape)).toEqual(['reason'])
   })
 })
