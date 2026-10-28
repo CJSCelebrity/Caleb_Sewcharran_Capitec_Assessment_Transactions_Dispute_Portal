@@ -10,6 +10,7 @@ public sealed class User
     public string Email { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;
     public string Role { get; private set; } = string.Empty;
+    public Guid? CustomerId { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
     public static User Create(
@@ -17,6 +18,7 @@ public sealed class User
         string email,
         string passwordHash,
         string role,
+        Guid? customerId,
         DateTimeOffset createdAt) =>
         new()
         {
@@ -24,6 +26,7 @@ public sealed class User
             Email = email.Trim().ToLowerInvariant(),
             PasswordHash = passwordHash,
             Role = role,
+            CustomerId = customerId,
             CreatedAt = createdAt.ToUniversalTime()
         };
 }

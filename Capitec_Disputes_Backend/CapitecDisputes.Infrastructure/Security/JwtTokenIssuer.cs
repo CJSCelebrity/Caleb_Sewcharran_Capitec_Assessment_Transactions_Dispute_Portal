@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -20,10 +21,17 @@ internal sealed class JwtTokenIssuer(IOptions<JwtOptions> options, TimeProvider 
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.SigningKey)),
             SecurityAlgorithms.HmacSha256);
 
+        var claims = new List<Claim> { new("sub", user.Email), new("role", user.Role) };
+
+        if (user.CustomerId is { } customerId)
+        {
+            claims.Add(new Claim("customerId", customerId.ToString()));
+        }
+
         var token = new JwtSecurityToken(
             issuer: settings.Issuer,
             audience: settings.Audience,
-            claims: [new Claim("sub", user.Email), new Claim("role", user.Role)],
+            claims: claims,
             expires: expiresAt.UtcDateTime,
             signingCredentials: credentials);
 

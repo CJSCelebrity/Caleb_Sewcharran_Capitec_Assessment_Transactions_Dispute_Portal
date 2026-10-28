@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using CapitecDisputes.Application.Authorization;
@@ -31,6 +31,18 @@ public class JwtTokenIssuerTests
             "admin@capitec.test",
             "hash",
             Roles.DisputeAdmin,
+            null,
+            Now);
+
+    private static readonly Guid CustomerId = Guid.Parse("0199c0de-0003-7000-8000-000000000001");
+
+    private static User Customer() =>
+        User.Create(
+            Guid.Parse("0199c0de-0002-7000-8000-000000000003"),
+            "thandi@example.test",
+            "hash",
+            Roles.Customer,
+            CustomerId,
             Now);
 
     private static JwtTokenIssuer Issuer() =>
@@ -67,5 +79,25 @@ public class JwtTokenIssuerTests
 
         principal.IsInRole(Roles.DisputeAdmin).ShouldBeTrue();
         principal.Identity!.Name.ShouldBe("admin@capitec.test");
+    }
+
+    [Fact]
+    public void Issue_carries_the_customer_id_as_a_claim()
+    {
+        var token = Issuer().Issue(Customer());
+
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token.Value);
+
+        jwt.Claims.ShouldContain(claim => claim.Type == "customerId" && claim.Value == CustomerId.ToString());
+    }
+
+    [Fact]
+    public void Issue_omits_the_customer_id_claim_for_staff()
+    {
+        var token = Issuer().Issue(Admin());
+
+        var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token.Value);
+
+        jwt.Claims.ShouldNotContain(claim => claim.Type == "customerId");
     }
 }

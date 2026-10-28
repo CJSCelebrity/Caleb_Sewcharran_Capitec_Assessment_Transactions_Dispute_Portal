@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace CapitecDisputes.Application.Contracts;
@@ -11,4 +11,5 @@ public sealed record LoginResponse(
     string AccessToken,
     DateTimeOffset ExpiresAtUtc,
     string Email,
-    string Role);
+    string Role,
+    Guid? CustomerId);

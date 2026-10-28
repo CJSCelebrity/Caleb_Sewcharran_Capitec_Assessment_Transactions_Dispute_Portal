@@ -1,4 +1,4 @@
-using CapitecDisputes.Infrastructure.Persistence.Seeding;
+﻿using CapitecDisputes.Infrastructure.Persistence.Seeding;
 using Shouldly;
 
 namespace CapitecDisputes.Tests.Persistence.Seeding;
@@ -142,5 +142,17 @@ public class SeedUserCsvReaderTests
             """));
 
         error.Message.ShouldContain("admin@capitec.test");
+    }
+
+    [Fact]
+    public void Read_accepts_the_customer_role()
+    {
+        var users = Read(
+            """
+            email,password,role
+            thandi@example.test,Customer#2026,Customer
+            """);
+
+        users[0].ShouldBe(new SeedUser("thandi@example.test", "Customer#2026", "Customer"));
     }
 }

@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using CapitecDisputes.Application.Abstractions;
 using CapitecDisputes.Application.Contracts;
@@ -21,6 +21,6 @@ public sealed class AuthService(
 
         var token = tokenIssuer.Issue(user);
 
-        return new LoginResponse(token.Value, token.ExpiresAtUtc, user.Email, user.Role);
+        return new LoginResponse(token.Value, token.ExpiresAtUtc, user.Email, user.Role, user.CustomerId);
     }
 }

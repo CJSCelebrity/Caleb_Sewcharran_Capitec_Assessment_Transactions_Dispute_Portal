@@ -15,6 +15,7 @@ public class UserTests
             "  Admin@Capitec.Test  ",
             "hash",
             Roles.DisputeAdmin,
+            null,
             new DateTimeOffset(2026, 10, 25, 8, 0, 0, TimeSpan.FromHours(2)));
 
         user.Email.ShouldBe("admin@capitec.test");
@@ -28,9 +29,40 @@ public class UserTests
             "readonly@capitec.test",
             "hash",
             Roles.ReadOnly,
+            null,
             new DateTimeOffset(2026, 10, 25, 8, 0, 0, TimeSpan.FromHours(2)));
 
         user.CreatedAt.Offset.ShouldBe(TimeSpan.Zero);
         user.CreatedAt.Hour.ShouldBe(6);
+    }
+
+    [Fact]
+    public void Create_keeps_the_customer_id_of_a_customer()
+    {
+        var customerId = Guid.CreateVersion7();
+
+        var user = User.Create(
+            Guid.CreateVersion7(),
+            "thandi@example.test",
+            "hash",
+            Roles.Customer,
+            customerId,
+            new DateTimeOffset(2026, 10, 25, 8, 0, 0, TimeSpan.Zero));
+
+        user.CustomerId.ShouldBe(customerId);
+    }
+
+    [Fact]
+    public void Create_leaves_a_staff_account_without_a_customer_id()
+    {
+        var user = User.Create(
+            Guid.CreateVersion7(),
+            "admin@capitec.test",
+            "hash",
+            Roles.DisputeAdmin,
+            null,
+            new DateTimeOffset(2026, 10, 25, 8, 0, 0, TimeSpan.Zero));
+
+        user.CustomerId.ShouldBeNull();
     }
 }

@@ -4,11 +4,14 @@ namespace CapitecDisputes.Domain.Entities;
 
 public sealed class Dispute
 {
+    private readonly List<DisputeStatusChange> _statusChanges = [];
+
     private Dispute()
     {
     }
 
     public Guid Id { get; private set; }
+    public Guid CustomerId { get; private set; }
     public Guid TransactionId { get; private set; }
     public decimal TransactionAmount { get; private set; }
     public string TransactionCurrency { get; private set; } = string.Empty;
@@ -19,28 +22,39 @@ public sealed class Dispute
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? ResolvedAt { get; private set; }
 
+    public IReadOnlyCollection<DisputeStatusChange> StatusChanges => _statusChanges;
+
     public static Dispute Raise(
-        Guid transactionId,
-        decimal transactionAmount,
-        string transactionCurrency,
-        DateTimeOffset transactionDate,
-        string merchantName,
+        Transaction transaction,
         string reason,
-        DateTimeOffset raisedAt) =>
-        new()
+        string raisedBy,
+        DateTimeOffset raisedAt)
+    {
+        var dispute = new Dispute
         {
             Id = Guid.CreateVersion7(),
-            TransactionId = transactionId,
-            TransactionAmount = transactionAmount,
-            TransactionCurrency = transactionCurrency,
-            TransactionDate = transactionDate.ToUniversalTime(),
-            MerchantName = merchantName,
+            CustomerId = transaction.CustomerId,
+            TransactionId = transaction.Id,
+            TransactionAmount = transaction.Amount,
+            TransactionCurrency = transaction.Currency,
+            TransactionDate = transaction.OccurredAt,
+            MerchantName = transaction.MerchantName,
             Reason = reason,
             Status = DisputeStatus.Initiated,
             CreatedAt = raisedAt.ToUniversalTime()
         };
 
-    public void ChangeStatus(DisputeStatus next, DateTimeOffset changedAt)
+        dispute._statusChanges.Add(DisputeStatusChange.Record(
+            dispute.Id,
+            null,
+            DisputeStatus.Initiated,
+            raisedBy,
+            dispute.CreatedAt));
+
+        return dispute;
+    }
+
+    public void ChangeStatus(DisputeStatus next, string changedBy, DateTimeOffset changedAt)
     {
         if (!Enum.IsDefined(next))
         {
@@ -52,11 +66,15 @@ public sealed class Dispute
             throw new InvalidDisputeStatusTransitionException(Status, next);
         }
 
+        var from = Status;
+
         Status = next;
 
         if (next == DisputeStatus.Resolved)
         {
             ResolvedAt = changedAt.ToUniversalTime();
         }
+
+        _statusChanges.Add(DisputeStatusChange.Record(Id, from, next, changedBy, changedAt));
     }
 }

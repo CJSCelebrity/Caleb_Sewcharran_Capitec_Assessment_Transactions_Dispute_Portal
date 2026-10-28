@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CapitecDisputes.Application.Abstractions;
+using CapitecDisputes.Application.Authorization;
 using CapitecDisputes.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,9 @@ internal sealed class UserSeeder(
     TimeProvider timeProvider,
     ILogger<UserSeeder> logger)
 {
+    internal static Guid? CustomerIdFor(string role) =>
+        role == Roles.Customer ? Guid.CreateVersion7() : null;
+
     public async Task SeedAsync(
         IReadOnlyList<SeedUser> seedUsers,
         string source,
@@ -41,6 +45,7 @@ internal sealed class UserSeeder(
                 seedUser.Email,
                 passwordHasher.Hash(seedUser.Password),
                 seedUser.Role,
+                CustomerIdFor(seedUser.Role),
                 timeProvider.GetUtcNow()))
             .ToList();
 

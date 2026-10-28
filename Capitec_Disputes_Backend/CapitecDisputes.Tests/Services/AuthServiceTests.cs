@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using CapitecDisputes.Application.Abstractions;
@@ -27,6 +27,18 @@ public class AuthServiceTests
             "admin@capitec.test",
             "stored-hash",
             Roles.DisputeAdmin,
+            null,
+            Now);
+
+    private static readonly Guid CustomerId = Guid.Parse("0199c0de-0003-7000-8000-000000000001");
+
+    private static User Customer() =>
+        User.Create(
+            Guid.Parse("0199c0de-0002-7000-8000-000000000004"),
+            "thandi@example.test",
+            "stored-hash",
+            Roles.Customer,
+            CustomerId,
             Now);
 
     [Fact]
@@ -78,6 +90,7 @@ public class AuthServiceTests
         result.ExpiresAtUtc.ShouldBe(Now.AddHours(8));
         result.Email.ShouldBe("admin@capitec.test");
         result.Role.ShouldBe(Roles.DisputeAdmin);
+        result.CustomerId.ShouldBeNull();
     }
 
     [Fact]
@@ -91,5 +104,25 @@ public class AuthServiceTests
         await Service().LoginAsync(new LoginRequest("admin@capitec.test", "wrong"), CancellationToken.None);
 
         issuer.Verify(instance => instance.Issue(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task LoginAsync_returns_the_customer_id_for_a_customer()
+    {
+        users
+            .Setup(repository => repository.FindByEmailAsync("thandi@example.test", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Customer());
+        hasher.Setup(instance => instance.Verify("Customer#2026", "stored-hash")).Returns(true);
+        issuer
+            .Setup(instance => instance.Issue(It.Is<User>(user => user.Email == "thandi@example.test")))
+            .Returns(new AccessToken("signed-token", Now.AddHours(8)));
+
+        var result = await Service().LoginAsync(
+            new LoginRequest("thandi@example.test", "Customer#2026"),
+            CancellationToken.None);
+
+        result.ShouldNotBeNull();
+        result.Role.ShouldBe(Roles.Customer);
+        result.CustomerId.ShouldBe(CustomerId);
     }
 }

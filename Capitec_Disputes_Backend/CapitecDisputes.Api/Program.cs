@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Text.Json.Serialization;
 using CapitecDisputes.Api.OpenApi;
@@ -74,6 +74,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IDisputeService, DisputeService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddDisputesPersistence(connectionString);
 builder.Services.AddDisputesSecurity(builder.Configuration, builder.Environment.ContentRootPath);
@@ -102,6 +103,8 @@ await app.Services.ApplyDisputesMigrationsAsync();
 if (app.Environment.IsDevelopment())
 {
     await app.Services.SeedConfiguredUsersAsync();
+    await app.Services.SeedConfiguredTransactionsAsync();
+    await app.Services.SeedConfiguredDisputesAsync();
 }
 
 await app.RunAsync();

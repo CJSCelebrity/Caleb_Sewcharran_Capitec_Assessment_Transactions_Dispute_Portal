@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,7 +10,7 @@ internal static class SeedUserCsvReader
 {
     private const string ExpectedHeader = "email,password,role";
 
-    private static readonly string[] KnownRoles = [Roles.ReadOnly, Roles.DisputeAdmin];
+    private static readonly string[] KnownRoles = [Roles.Customer, Roles.ReadOnly, Roles.DisputeAdmin];
 
     public static IReadOnlyList<SeedUser> Read(TextReader reader, string source)
     {

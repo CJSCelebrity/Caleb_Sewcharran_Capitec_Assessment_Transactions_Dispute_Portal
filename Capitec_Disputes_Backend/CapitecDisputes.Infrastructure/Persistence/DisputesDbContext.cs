@@ -1,4 +1,4 @@
-using CapitecDisputes.Domain.Entities;
+﻿using CapitecDisputes.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CapitecDisputes.Infrastructure.Persistence;
@@ -6,6 +6,8 @@ namespace CapitecDisputes.Infrastructure.Persistence;
 public sealed class DisputesDbContext(DbContextOptions<DisputesDbContext> options) : DbContext(options)
 {
     public DbSet<Dispute> Disputes => Set<Dispute>();
+
+    public DbSet<Transaction> Transactions => Set<Transaction>();
 
     public DbSet<User> Users => Set<User>();
 

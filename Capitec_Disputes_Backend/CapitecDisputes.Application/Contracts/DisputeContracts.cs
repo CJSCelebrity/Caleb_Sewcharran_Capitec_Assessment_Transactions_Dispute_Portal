@@ -18,11 +18,13 @@ public sealed record DisputeResponse(
 
 public sealed record CreateDisputeRequest(
     [Required] Guid? TransactionId,
-    [Required][Range(0.01, 1_000_000_000)] decimal? TransactionAmount,
-    [Required][StringLength(3, MinimumLength = 3)] string TransactionCurrency,
-    [Required] DateTimeOffset? TransactionDate,
-    [Required][StringLength(200, MinimumLength = 1)] string MerchantName,
     [Required][StringLength(500, MinimumLength = 1)] string Reason);
 
 public sealed record UpdateDisputeStatusRequest(
     [Required][EnumDataType(typeof(DisputeStatus))] DisputeStatus? Status);
+
+public sealed record DisputeStatusChangeResponse(
+    string? FromStatus,
+    string ToStatus,
+    string ChangedBy,
+    DateTimeOffset ChangedAt);

@@ -31,6 +31,9 @@ namespace CapitecDisputes.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("MerchantName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -66,50 +69,87 @@ namespace CapitecDisputes.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerId");
+
                     b.HasIndex("Status");
 
                     b.HasIndex("TransactionId");
 
                     b.ToTable("disputes", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("0199c0de-0001-7000-8000-000000000001"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 13, 7, 30, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            MerchantName = "Takealot",
-                            Reason = "Charged twice for a single order.",
-                            Status = "Initiated",
-                            TransactionAmount = 1499.99m,
-                            TransactionCurrency = "ZAR",
-                            TransactionDate = new DateTimeOffset(new DateTime(2026, 10, 12, 9, 14, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            TransactionId = new Guid("0199c0de-1001-7000-8000-000000000001")
-                        },
-                        new
-                        {
-                            Id = new Guid("0199c0de-0001-7000-8000-000000000002"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 10, 6, 45, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            MerchantName = "Uber Eats",
-                            Reason = "Order never arrived but the card was charged.",
-                            Status = "UnderInvestigation",
-                            TransactionAmount = 320.00m,
-                            TransactionCurrency = "ZAR",
-                            TransactionDate = new DateTimeOffset(new DateTime(2026, 10, 9, 18, 2, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            TransactionId = new Guid("0199c0de-1001-7000-8000-000000000002")
-                        },
-                        new
-                        {
-                            Id = new Guid("0199c0de-0001-7000-8000-000000000003"),
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 10, 2, 8, 5, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            MerchantName = "Spotify",
-                            Reason = "Subscription billed after cancellation.",
-                            ResolvedAt = new DateTimeOffset(new DateTime(2026, 10, 7, 14, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            Status = "Resolved",
-                            TransactionAmount = 89.50m,
-                            TransactionCurrency = "ZAR",
-                            TransactionDate = new DateTimeOffset(new DateTime(2026, 10, 1, 11, 20, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
-                            TransactionId = new Guid("0199c0de-1001-7000-8000-000000000003")
-                        });
+            modelBuilder.Entity("CapitecDisputes.Domain.Entities.DisputeStatusChange", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("DisputeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FromStatus")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ToStatus")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DisputeId");
+
+                    b.ToTable("dispute_status_changes", (string)null);
+                });
+
+            modelBuilder.Entity("CapitecDisputes.Domain.Entities.Transaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("MerchantName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Reference")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Reference")
+                        .IsUnique();
+
+                    b.ToTable("transactions", (string)null);
                 });
 
             modelBuilder.Entity("CapitecDisputes.Domain.Entities.User", b =>
@@ -120,6 +160,9 @@ namespace CapitecDisputes.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CustomerId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -142,6 +185,20 @@ namespace CapitecDisputes.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("users", (string)null);
+                });
+
+            modelBuilder.Entity("CapitecDisputes.Domain.Entities.DisputeStatusChange", b =>
+                {
+                    b.HasOne("CapitecDisputes.Domain.Entities.Dispute", null)
+                        .WithMany("StatusChanges")
+                        .HasForeignKey("DisputeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CapitecDisputes.Domain.Entities.Dispute", b =>
+                {
+                    b.Navigation("StatusChanges");
                 });
 #pragma warning restore 612, 618
         }
