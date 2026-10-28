@@ -1,0 +1,13 @@
+reference,customerEmail,amount,currency,occurredAt,merchantName
+TXN-1001,thandi@example.test,1499.99,ZAR,2026-10-02T09:14:00Z,Takealot
+TXN-1002,thandi@example.test,320.00,ZAR,2026-10-05T18:42:00Z,Uber Eats
+TXN-1003,thandi@example.test,89.50,ZAR,2026-10-07T06:00:00Z,Spotify
+TXN-1004,thandi@example.test,249.00,ZAR,2026-10-11T13:27:00Z,Woolworths
+TXN-1005,thandi@example.test,1200.00,ZAR,2026-10-14T20:05:00Z,Makro
+TXN-1006,thandi@example.test,75.00,ZAR,2026-10-18T07:31:00Z,Vida e Caffe
+TXN-2001,sipho@example.test,540.00,ZAR,2026-10-03T11:00:00Z,Checkers
+TXN-2002,sipho@example.test,2199.00,ZAR,2026-10-06T15:20:00Z,Incredible Connection
+TXN-2003,sipho@example.test,149.00,ZAR,2026-10-09T08:45:00Z,Netflix
+TXN-2004,sipho@example.test,60.00,ZAR,2026-10-13T17:10:00Z,Shell
+TXN-2005,sipho@example.test,980.00,ZAR,2026-10-16T12:00:00Z,Dis-Chem
+TXN-2006,sipho@example.test,430.00,ZAR,2026-10-20T19:35:00Z,Mr Price

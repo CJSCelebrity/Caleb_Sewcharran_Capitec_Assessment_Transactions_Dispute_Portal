@@ -1,0 +1,6 @@
+transactionReference,status,reason
+TXN-1001,Resolved,Charged twice for a single order.
+TXN-1002,UnderInvestigation,Order never arrived but the card was charged.
+TXN-1005,Initiated,I did not authorise this purchase.
+TXN-2002,UnderInvestigation,The item was returned but never refunded.
+TXN-2003,Resolved,Subscription billed after cancellation.
