@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { createDisputeSchema } from './createDisputeSchema'
 
 const valid = {
-  transactionId: '0199c0de-1001-7000-8000-000000000009',
   transactionAmount: 250,
   transactionCurrency: 'zar',
   transactionDate: '2026-10-20T12:00',
@@ -22,10 +21,6 @@ describe('createDisputeSchema', () => {
 
     expect(parsed.transactionDate).toBe(new Date('2026-10-20T12:00').toISOString())
     expect(parsed.transactionDate.endsWith('Z')).toBe(true)
-  })
-
-  it('rejects a transaction id that is not a uuid', () => {
-    expect(createDisputeSchema.safeParse({ ...valid, transactionId: 'nope' }).success).toBe(false)
   })
 
   it('rejects an amount below the server minimum of 0.01', () => {

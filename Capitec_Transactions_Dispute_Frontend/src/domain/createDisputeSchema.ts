@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
 export const createDisputeSchema = z.object({
-  transactionId: z.uuid('Enter a valid transaction id (UUID).'),
   transactionAmount: z
     .number('Enter an amount.')
     .min(0.01, 'Amount must be at least 0.01.')
@@ -34,4 +33,6 @@ export const createDisputeSchema = z.object({
 
 export type CreateDisputeForm = z.input<typeof createDisputeSchema>
 
-export type CreateDisputePayload = z.output<typeof createDisputeSchema>
+export type CreateDisputeValues = z.output<typeof createDisputeSchema>
+
+export type CreateDisputePayload = CreateDisputeValues & { transactionId: string }
