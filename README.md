@@ -19,6 +19,28 @@ Two rules are enforced in the domain and cannot be bypassed from the API:
 - A dispute advances **one step forward at a time**. Anything else is a `409`, and `Resolved` is terminal.
 - A transaction can carry **one dispute**. A second attempt is a `409`.
 
+
+## Screenshots indicating functionality on the Disputes Portal
+
+Customer View
+![Customer View](./docs/images/Caleb_Sewcharran_Capitec_Disputes_Customer_View.png)
+
+Landing Page
+![Customer View](./docs/images/Caleb_Sewcharran_Capitec_Disputes_Landing_Page.png)
+
+Portal Sign In
+![Customer View](./docs/images/Caleb_Sewcharran_Capitec_Disputes_Portal_Sign_In.png)
+
+Readonly Role
+![Customer View](./docs/images/Caleb_Sewcharran_Capitec_Disputes_Readonly_Role.png)
+
+Resolved Dispute
+![Customer View](./docs/images/Caleb_Sewcharran_Capitec_Disputes_Resolved_Dispute.png)
+
+Under Investigation Dispute
+![Customer View](./docs/images/Caleb_Sewcharran_Capitec_Disputes_Under_Investigation.png)
+
+
 ## Architecture
 
 ```
